@@ -37,7 +37,12 @@ class ShowProfileActivity : AppCompatActivity() {
         if (sharedPreference.contains("IMAGE_URI") && sharedPreference.contains("FNAME") && sharedPreference.contains("NNAME") && sharedPreference.contains("INTERESTS")) {
             Log.i("------> stuff exist", "Loaded from shared preferences")
             image_uri = Uri.parse(sharedPreference.getString("IMAGE_URI",null))
-            frame.setImageBitmap(uriToBitmap(image_uri!!))
+
+            if ( uriToBitmap(image_uri!!) == null)
+                frame.setBackgroundResource(R.drawable.default_profile)
+            else
+                frame.setImageBitmap(uriToBitmap(image_uri!!))
+
             fName_tv.setText(sharedPreference.getString("FNAME",null))
             nName_tv.setText(sharedPreference.getString("NNAME",null))
             interests_tv.setText(sharedPreference.getString("INTERESTS",null))
