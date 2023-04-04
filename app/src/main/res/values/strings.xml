@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">profileLab</string>
+    <string name="label_fullName">Full Name :</string>
+    <string name="label_nickname">Nick name :</string>
+    <string name="label_interests">Interests :</string>
+    <string name="default_fullName">John Doe</string>
+    <string name="default_nickname">"@"theFamousJohn</string>
+    <string name="default_interests">Footbal, Basketbal, Movies</string>
+    <string name="edit_btn">Edit Profile</string>
+    <string name="done_btn">Done</string>
+    <string name="edit">Edit</string>
+    <string name="select_gallery">Select an image from the phone gallery</string>
+    <string name="select_camera">Use the camera to take a picture</string>
+</resources>
