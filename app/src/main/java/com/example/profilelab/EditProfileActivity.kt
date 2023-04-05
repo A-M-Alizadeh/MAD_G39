@@ -119,6 +119,10 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreateContextMenu(menu, v, menuInfo)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+            
+        return super.onPrepareOptionsMenu(menu)
+    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.edit_profile_menu, menu)
         return true
