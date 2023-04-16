@@ -9,6 +9,7 @@
     <string name="edit_btn">Edit Profile</string>
     <string name="done_btn">Done</string>
     <string name="edit">Edit</string>
+    <string name="save">Save</string>
     <string name="select_gallery">Select an image from the phone gallery</string>
     <string name="select_camera">Use the camera to take a picture</string>
 </resources>

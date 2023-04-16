@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.ContextMenu
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -87,19 +88,24 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.getItemId()) {
+            R.id.save_button -> {
+                saveData()
+                val intent = Intent(this, ShowProfileActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onBackPressed() {
         Toast.makeText(this, "Back button is disabled", Toast.LENGTH_SHORT).show()
         if (fName_et.text.toString() == "" || nName_et.text.toString() == "" || interests_et.text.toString() == "" || image_uri == null) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
         } else {
-            val sharedPreference =  getSharedPreferences("PROFILE_DATA", Context.MODE_PRIVATE)
-            var editor = sharedPreference.edit()
-            editor.putString("IMAGE_URI",image_uri.toString())
-            editor.putString("FNAME",fName_et.text.toString())
-            editor.putString("NNAME",nName_et.text.toString())
-            editor.putString("INTERESTS",interests_et.text.toString())
-            editor.apply()
-            finish()
+            saveData()
         }
 
     }
@@ -111,6 +117,15 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
     ) {
         menuInflater.inflate(R.menu.edit_photo_menu, menu)
         super.onCreateContextMenu(menu, v, menuInfo)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+            
+        return super.onPrepareOptionsMenu(menu)
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.edit_profile_menu, menu)
+        return true
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
@@ -126,8 +141,9 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
                     == PackageManager.PERMISSION_DENIED) {
                     val permission = arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     requestPermissions(permission, 121)
-                    openCamera()
                 }
+                openCamera()
+
 //                }
                 return true
             }
@@ -189,6 +205,17 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
         fName_et.setText(savedInstanceState.getString("fname_et"))
         nName_et.setText(savedInstanceState.getString("nname_et"))
         interests_et.setText(savedInstanceState.getString("interests_et"))
+    }
+
+    private fun saveData() {
+        val sharedPreference =  getSharedPreferences("PROFILE_DATA", Context.MODE_PRIVATE)
+        var editor = sharedPreference.edit()
+        editor.putString("IMAGE_URI",image_uri.toString())
+        editor.putString("FNAME",fName_et.text.toString())
+        editor.putString("NNAME",nName_et.text.toString())
+        editor.putString("INTERESTS",interests_et.text.toString())
+        editor.apply()
+        finish()
     }
 
 }
