@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">profileLab</string>
+    <string name="app_name">Reservation</string>
     <string name="label_fullName">Full Name :</string>
     <string name="label_nickname">Nick name :</string>
     <string name="label_interests">Interests :</string>
@@ -14,4 +14,6 @@
     <string name="select_camera">Use the camera to take a picture</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>

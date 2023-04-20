@@ -1,11 +1,15 @@
-package com.example.profilelab.fragments
+package com.example.profilelab.tabs
 
+import ReserveAdapter
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.profilelab.R
+import com.example.profilelab.ReserveViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +40,23 @@ class MyReserve : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_my_reserve, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val recyclerview = getView()?.findViewById<RecyclerView>(R.id.recyclerview)
+
+        recyclerview?.layoutManager = LinearLayoutManager(context)
+
+        val data = ArrayList<ReserveViewModel>()
+
+        for (i in 1..20) {
+            data.add(ReserveViewModel("Item " + i))
+        }
+
+        val adapter = ReserveAdapter(data)
+
+        recyclerview?.adapter = adapter
     }
 
     companion object {

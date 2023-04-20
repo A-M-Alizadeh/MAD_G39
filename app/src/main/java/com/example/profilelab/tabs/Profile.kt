@@ -1,4 +1,4 @@
-package com.example.profilelab.fragments
+package com.example.profilelab.tabs
 
 import android.content.Context
 import android.graphics.Bitmap

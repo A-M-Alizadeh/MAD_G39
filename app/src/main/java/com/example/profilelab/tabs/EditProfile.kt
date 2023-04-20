@@ -1,4 +1,4 @@
-package com.example.profilelab.fragments
+package com.example.profilelab.tabs
 
 import android.app.Activity
 import android.content.ContentValues
@@ -77,16 +77,16 @@ class EditProfile : Fragment() {
     ): View {
         setHasOptionsMenu(true)
 
-        val viewThis: View = inflater.inflate(R.layout.fragment_edit_profile, container, false)
+        val viewThis: View = inflater.inflate(R.layout.fragment_profile, container, false)
 
         frame = viewThis.findViewById(R.id.profile_photo)
-        val editBtn = viewThis.findViewById<ImageButton>(R.id.edit_photo)
+//        val editBtn = viewThis.findViewById<ImageButton>(R.id.edit_photo)
         nameTv = viewThis.findViewById(R.id.fullname)
         nicknameET = viewThis.findViewById(R.id.nickname)
         interestsTv = viewThis.findViewById(R.id.interests)
 
         frame.setOnClickListener { onClick(it) }
-        editBtn.setOnClickListener { onClick(it) }
+//        editBtn.setOnClickListener { onClick(it) }
 
         frame.setBackgroundResource(R.drawable.default_profile)
         nameTv.setText(R.string.default_fullName)
