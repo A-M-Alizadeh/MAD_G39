@@ -20,6 +20,9 @@ interface SportDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(sport: Sport): Long
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAll(sports: List<Sport>): List<Long>
+
     @Delete
     fun delete(sport: Sport)
 
@@ -28,5 +31,9 @@ interface SportDao {
 
     @Update
     fun update(sport: Sport)
+
+    @Query("UPDATE sports SET title = :title WHERE id = :id")
+    fun update(id: Int, title: String)
+
 
 }

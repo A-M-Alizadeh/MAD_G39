@@ -14,7 +14,7 @@ import com.example.profilelab.tabs.Profile
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var toggle: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +36,10 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        binding.bottomNavigationView.selectedItemId = R.id.my_reservations
 
-        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu);// set drawable icon
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_menu)// set drawable icon
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         binding.apply {
             toggle = ActionBarDrawerToggle(this@MainActivity, drawerLayout, R.string.open, R.string.close)

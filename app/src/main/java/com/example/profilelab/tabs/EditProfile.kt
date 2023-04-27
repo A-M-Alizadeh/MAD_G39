@@ -77,7 +77,7 @@ class EditProfile : Fragment() {
     ): View {
         setHasOptionsMenu(true)
 
-        val viewThis: View = inflater.inflate(R.layout.fragment_profile, container, false)
+        val viewThis: View = inflater.inflate(R.layout.activity_edit_profile, container, false)
 
         frame = viewThis.findViewById(R.id.profile_photo)
 //        val editBtn = viewThis.findViewById<ImageButton>(R.id.edit_photo)

@@ -21,7 +21,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.FileDescriptor
 import java.io.IOException
-import kotlin.math.log
 
 
 class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
@@ -101,7 +100,7 @@ class EditProfileActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        Toast.makeText(this, "Back button is disabled", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "Back button is disabled", Toast.LENGTH_SHORT).show()
         if (fName_et.text.toString() == "" || nName_et.text.toString() == "" || interests_et.text.toString() == "" || image_uri == null) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
         } else {

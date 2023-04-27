@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_margin="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:weightSum="10"
+    android:background="@drawable/border"
+    >
+
+    <RadioButton
+        android:id="@+id/radio_btn"
+        android:layout_width="24dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.1" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:layout_marginHorizontal="1dp"
+        />
+    <LinearLayout
+        android:id="@+id/start_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            />
+
+        <TextView
+            android:id="@+id/start_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="08 : 00"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            />
+
+
+    </LinearLayout>
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        />
+    <LinearLayout
+        android:id="@+id/end_container"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="End"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/gray"
+            />
+
+        <TextView
+            android:id="@+id/end_time_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="10 : 00"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            />
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

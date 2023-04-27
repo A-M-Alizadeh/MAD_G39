@@ -4,19 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.profilelab.dao.CourtDao
-import com.example.profilelab.dao.ReservationDao
-import com.example.profilelab.dao.SportDao
-import com.example.profilelab.dao.TimeSlotDao
-import com.example.profilelab.entities.Court
-import com.example.profilelab.entities.Reservation
-import com.example.profilelab.entities.Sport
-import com.example.profilelab.entities.TimeSlot
+import com.example.profilelab.dao.*
+import com.example.profilelab.entities.*
 
-@Database(entities = [Sport::class, Court::class, TimeSlot::class, Reservation::class], version = 1)
+@Database(entities = [Sport::class, Court::class, CourtSport::class,  TimeSlot::class, Reservation::class], version = 1)
 abstract class AppDB : RoomDatabase(){
     abstract fun sportDao(): SportDao
     abstract fun courtDao(): CourtDao
+    abstract fun courtSportDao(): CourtSportsDao
     abstract fun timeSlotDao(): TimeSlotDao
     abstract fun reservationDao(): ReservationDao
 
@@ -30,8 +25,9 @@ abstract class AppDB : RoomDatabase(){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDB::class.java,
-                    "app_db"
-                ).fallbackToDestructiveMigration().build()
+                    "g39_reservation_app_db"
+                )//.createFromAsset("database/g39_reservation_app_db.db")
+                    .fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }

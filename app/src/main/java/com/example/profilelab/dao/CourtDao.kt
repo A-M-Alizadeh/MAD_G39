@@ -16,24 +16,28 @@ interface CourtDao {
     @Query("SELECT * FROM courts WHERE id LIKE :id LIMIT 1")
     fun findById(id: Int): Court
 
-    @Query("SELECT * FROM courts WHERE sport_id LIKE :sport_id LIMIT 1")
-    fun findBySportId(sport_id: Int): Court
-
-    @Query("SELECT * FROM courts WHERE sport_id LIKE :sport_id")
-    fun findBySportIdList(sport_id: Int): List<Court>
-
-    @Query("SELECT * FROM courts WHERE sport_id LIKE :sport_id")
-    fun findBySportIdArray(sport_id: Int): Array<Court>
-
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(court: Court): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertNew(court: Court): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAll(courts: List<Court>): List<Long>
 
     @Delete
     fun delete(court: Court)
 
+    @Query("DELETE FROM courts WHERE id = :id")
+    fun deleteById(id: Int)
+
+    @Query("DELETE FROM courts WHERE id IN (:ids)")
+    fun deleteByIds(ids: IntArray)
+
+
     @Query("DELETE FROM courts")
     fun deleteAll()
 
-    @Update
-    fun update(court: Court)
+    @Query("UPDATE courts SET name = :name WHERE id = :id")
+    fun update(id: Int, name: String)
 }

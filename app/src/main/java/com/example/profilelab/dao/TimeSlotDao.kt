@@ -20,7 +20,10 @@ interface TimeSlotDao {
     fun findByEndTime(end_time: String): TimeSlot
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(timeSlot: TimeSlot): Long
+    fun insert(timeSlots: TimeSlot) : Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertAll(timeSlots: List<TimeSlot>): List<Long>
 
     @Delete
     fun delete(timeSlot: TimeSlot)
@@ -30,6 +33,9 @@ interface TimeSlotDao {
 
     @Update
     fun update(timeSlot: TimeSlot)
+
+    @Query("UPDATE time_slots SET start_time = :start_time, end_time = :end_time WHERE id = :id")
+    fun update(id: Int, start_time: String, end_time: String)
 
 
 }

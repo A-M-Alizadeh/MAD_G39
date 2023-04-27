@@ -9,6 +9,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "sports")
 data class Sport (
     @PrimaryKey(autoGenerate = true) val id: Int?,
-    @ColumnInfo(name = "title") val title: String?,
+    @ColumnInfo(name = "title") val title: String,
 )
-

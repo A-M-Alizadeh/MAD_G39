@@ -15,7 +15,7 @@
         >
 
         <ImageView
-            android:layout_width="256sp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:scaleType="fitXY"
             app:layout_constraintHeight_percent="0.3333"
@@ -23,7 +23,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/profile_photo"
-            android:layout_marginVertical="5sp"
+            android:layout_marginVertical="8dp"
+            android:layout_marginHorizontal="8dp"
             android:contentDescription="this should be default image"
             />
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent">
             <TextView
                 android:id="@+id/fullname_label"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textColor="@color/gray"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,15 +48,18 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/fullname_label"
-                android:layout_marginBottom="20sp"
-                android:layout_marginTop="5sp"/>
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/border"
+                android:padding="3dp"
+                />
             <TextView
                 android:id="@+id/nickname_label"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textColor="@color/gray"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,15 +71,18 @@
                 android:id="@+id/nickname"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nickname_label"
                 android:layout_marginBottom="20sp"
-                android:layout_marginTop="5sp"/>
+                android:layout_marginTop="5sp"
+                android:background="@drawable/border"
+                android:padding="5dp"
+                />
             <TextView
                 android:id="@+id/interests_label"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textColor="@color/gray"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,11 +94,14 @@
                 android:id="@+id/interests"
                 android:textSize="14sp"
                 android:textColor="@color/black"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/interests_label"
-                android:layout_marginTop="5sp"/>
+                android:layout_marginTop="5sp"
+                android:background="@drawable/border"
+                android:padding="5dp"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

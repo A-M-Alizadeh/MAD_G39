@@ -8,6 +8,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "time_slots")
 data class TimeSlot (
     @PrimaryKey(autoGenerate = true) val id: Int?,
-    @ColumnInfo(name = "start_time") val start_time: Int,
-    @ColumnInfo(name = "end_time") val end_time: Int,
+    @ColumnInfo(name = "start_time") val start_time: String,
+    @ColumnInfo(name = "end_time") val end_time: String,
 )
