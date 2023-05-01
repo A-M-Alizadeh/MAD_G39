@@ -9,8 +9,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.profilelab.AppDB
+import com.example.profilelab.R
 import com.example.profilelab.databinding.TimetableBottomsheetBinding
-import com.example.profilelab.entities.Reservation
+import com.example.profilelab.models.Reservation
 import com.example.profilelab.view_models.TimeSlotViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -62,6 +63,17 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
         binding.timeBtn.setOnClickListener {
             reserve()
             dismiss()
+            val bundle = Bundle()
+            bundle.putBoolean("reserved", true)
+            val myReserve = MyReserve()
+
+            myReserve.arguments = bundle
+
+            val fragmentManager = requireActivity().supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+
+            fragmentTransaction.replace(R.id.frame_layout, myReserve)
+            fragmentTransaction.commit()
         }
     }
 

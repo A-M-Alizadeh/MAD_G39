@@ -1,6 +1,6 @@
 package com.example.profilelab.dao
 import androidx.room.*
-import com.example.profilelab.entities.TimeSlot
+import com.example.profilelab.models.TimeSlot
 
 @Dao
 interface TimeSlotDao {

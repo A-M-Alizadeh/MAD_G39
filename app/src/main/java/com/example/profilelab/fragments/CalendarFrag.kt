@@ -1,5 +1,6 @@
 package com.example.profilelab.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.profilelab.AppDB
 import com.example.profilelab.R
@@ -15,13 +17,16 @@ import com.example.profilelab.databinding.FragmentCalendarBinding
 import com.example.profilelab.view_models.CourtViewModel
 import com.example.profilelab.view_models.SportViewModel
 import com.stacktips.view.CalendarListener
+import com.stacktips.view.DayDecorator
+import com.stacktips.view.DayView
+import com.stacktips.view.utils.CalendarUtils
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class CalendarFrag : Fragment() {
 
@@ -95,15 +100,29 @@ class CalendarFrag : Fragment() {
         //end spinner
 
         val currentCalendar = Calendar.getInstance(Locale.getDefault())
+        val decorators = ArrayList<DayDecorator>()
+        decorators.add(DisabledColorDecorator())
 
         binding.calendarView.firstDayOfWeek = Calendar.MONDAY
         binding.calendarView.setShowOverflowDate(false)
+
+        binding.calendarView.setDecorators(decorators)
         binding.calendarView.refreshCalendar(currentCalendar)
         binding.calendarView.setCalendarListener(object : CalendarListener {
             override fun onDateSelected(date: Date?) {
                 val df = SimpleDateFormat("dd-MM-yyyy")
-                selectedDate = df.format(date)
-//                Toast.makeText(activity, df.format(date), Toast.LENGTH_SHORT).show()
+
+                val today = Date()
+
+                val todayFormat = df.format(today)
+                val selectedDateFormat = df.format(date)
+
+                if ( today.before(date) or todayFormat.equals(selectedDateFormat) )
+                    selectedDate = selectedDateFormat
+                else {
+                    selectedDate = ""
+                    Toast.makeText(activity, "Chosen date is not valid", Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onMonthChanged(date: Date?) {
@@ -115,12 +134,25 @@ class CalendarFrag : Fragment() {
         binding.timesheetBtn.setOnClickListener {
             val timeSlotFragment = TimeSlotFragment()
             val bundle = Bundle()
-            bundle.putString("selectedDate", selectedDate)
-            bundle.putString("descriptionText", descriptionText)
-            bundle.putInt("selectedCourt", selectedCourt)
-            bundle.putInt("selectedSport", selectedSport)
-            timeSlotFragment.arguments = bundle
-            timeSlotFragment.show(parentFragmentManager, "timeSlotSelect")
+
+            if (selectedDate.isNotEmpty()) {
+                bundle.putString("selectedDate", selectedDate)
+                bundle.putString("descriptionText", descriptionText)
+                bundle.putInt("selectedCourt", selectedCourt)
+                bundle.putInt("selectedSport", selectedSport)
+                timeSlotFragment.arguments = bundle
+                timeSlotFragment.show(parentFragmentManager, "timeSlotSelect")
+            } else
+                Toast.makeText(activity, "Date has not chosen yet!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private class DisabledColorDecorator : DayDecorator {
+        override fun decorate(dayView: DayView) {
+            if (CalendarUtils.isPastDay(dayView.date)) {
+                val color: Int = Color.parseColor("#a9afb9")
+                dayView.setBackgroundColor(color)
+            }
         }
     }
 
@@ -147,14 +179,6 @@ class CalendarFrag : Fragment() {
                 }
                 sportAdapter.notifyDataSetChanged()
             }
-        }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun getCourtSportId(courtId:Int, sportId:Int, callback: (Int) -> Unit){
-        GlobalScope.launch(Dispatchers.IO) {
-            val courtSportId = db.courtSportDao().getByCourtIdAndSportId(courtId, sportId)
-            callback(courtSportId.id)
         }
     }
 }

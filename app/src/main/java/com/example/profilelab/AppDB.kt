@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.profilelab.dao.*
-import com.example.profilelab.entities.*
+import com.example.profilelab.models.*
 
-@Database(entities = [Sport::class, Court::class, CourtSport::class,  TimeSlot::class, Reservation::class], version = 1)
+
+
+@Database(entities = [Sport::class, Court::class, CourtSport::class,  TimeSlot::class, Reservation::class], version = 2, exportSchema = true)
 abstract class AppDB : RoomDatabase(){
     abstract fun sportDao(): SportDao
     abstract fun courtDao(): CourtDao
@@ -27,7 +29,8 @@ abstract class AppDB : RoomDatabase(){
                     AppDB::class.java,
                     "g39_reservation_app_db"
                 )//.createFromAsset("database/g39_reservation_app_db.db")
-                    .fallbackToDestructiveMigration().build()
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

@@ -1,7 +1,8 @@
 package com.example.profilelab.dao
+import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.profilelab.entities.FullReservation
-import com.example.profilelab.entities.Reservation
+import com.example.profilelab.models.FullReservation
+import com.example.profilelab.models.Reservation
 
 @Dao
 interface ReservationDao {
@@ -26,13 +27,14 @@ interface ReservationDao {
     @Query("SELECT time_slot_id FROM reservations WHERE date_ = :date_")
     fun findByDate(date_: String): List<Int>
 
-    @Query("SELECT * FROM reservations " +
-            "INNER JOIN court_sports ON reservations.court_sports_id = court_sports.id " +
-            "INNER JOIN time_slots ON reservations.time_slot_id = time_slots.id " +
+    @Query("SELECT *, courts.name AS court, sports.title AS sport, r.id AS reservation_id FROM reservations AS r " +
+            "INNER JOIN court_sports ON r.court_sports_id = court_sports.id " +
+            "INNER JOIN time_slots ON r.time_slot_id = time_slots.id " +
             "INNER JOIN courts ON court_sports.court_id = courts.id " +
             "INNER JOIN sports ON court_sports.sport_id = sports.id "+
+            "WHERE r.status = 1 " +
             "ORDER BY date_ DESC")
-    fun getInDetails(): List<FullReservation>
+    fun getInDetails(): LiveData<List<FullReservation>>
 
     @Insert
     fun insert(reservation: Reservation) : Long
