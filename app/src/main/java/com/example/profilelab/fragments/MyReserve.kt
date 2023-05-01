@@ -1,4 +1,4 @@
-package com.example.profilelab.tabs
+package com.example.profilelab.fragments
 
 import ReserveAdapter
 import android.graphics.Canvas
@@ -20,8 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.profilelab.AppDB
 import com.example.profilelab.R
-import com.example.profilelab.databinding.ActivityMainBinding
-import com.example.profilelab.databinding.FragmentMyReserveBinding
 import com.example.profilelab.view_models.ReserveViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.DelicateCoroutinesApi

@@ -7,9 +7,9 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
 import com.example.profilelab.databinding.ActivityMainBinding
-import com.example.profilelab.tabs.CalendarFrag
-import com.example.profilelab.tabs.MyReserve
-import com.example.profilelab.tabs.Profile
+import com.example.profilelab.fragments.CalendarFrag
+import com.example.profilelab.fragments.MyReserve
+import com.example.profilelab.fragments.Profile
 
 class MainActivity : AppCompatActivity() {
 
