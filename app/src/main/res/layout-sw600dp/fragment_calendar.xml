@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ffffff"
-            app:selectedDayBackgroundColor="@color/red_500"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -44,10 +43,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:background="@drawable/border"
-                android:contentDescription="@string/court_loading"
                 android:minHeight="48dp"
                 android:padding="16dp"
-                android:spinnerMode="dialog" />
+                android:spinnerMode="dialog"
+                android:contentDescription="@string/sport_loading"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

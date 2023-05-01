@@ -1,6 +1,6 @@
 package com.example.profilelab.dao
 import androidx.room.*
-import com.example.profilelab.entities.Court
+import com.example.profilelab.models.Court
 
 @Dao
 interface CourtDao {

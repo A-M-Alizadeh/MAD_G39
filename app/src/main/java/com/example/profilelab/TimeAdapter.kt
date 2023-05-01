@@ -13,6 +13,7 @@ class TimeAdapter(context: Context, mList: ArrayList <TimeSlotViewModel>, privat
 
     private val context: Context
     private val data : ArrayList<TimeSlotViewModel>
+    var selectedPosition = -1
     init {
         this.context = context
         this.data = mList
@@ -27,7 +28,6 @@ class TimeAdapter(context: Context, mList: ArrayList <TimeSlotViewModel>, privat
         val itemsViewModel = data[position]
         holder.start.text = itemsViewModel.startTime
         holder.end.text = itemsViewModel.endTime
-
     }
 
     override fun getItemCount(): Int {

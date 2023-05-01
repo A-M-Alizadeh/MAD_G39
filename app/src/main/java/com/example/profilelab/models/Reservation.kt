@@ -1,4 +1,4 @@
-package com.example.profilelab.entities
+package com.example.profilelab.models
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

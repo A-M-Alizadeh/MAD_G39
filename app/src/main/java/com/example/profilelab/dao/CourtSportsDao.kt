@@ -1,8 +1,8 @@
 package com.example.profilelab.dao
 
 import androidx.room.*
-import com.example.profilelab.entities.CourtSport
-import com.example.profilelab.entities.Sport
+import com.example.profilelab.models.CourtSport
+import com.example.profilelab.models.Sport
 import com.example.profilelab.view_models.CourtSportIdViewModel
 
 @Dao

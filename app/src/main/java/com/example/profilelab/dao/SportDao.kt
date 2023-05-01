@@ -1,7 +1,7 @@
 package com.example.profilelab.dao
 
 import androidx.room.*
-import com.example.profilelab.entities.Sport
+import com.example.profilelab.models.Sport
 
 @Dao
 interface SportDao {

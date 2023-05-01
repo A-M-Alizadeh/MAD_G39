@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".tabs.CalendarFrag">
+    tools:context=".fragments.CalendarFrag">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -16,6 +16,8 @@
                 android:id="@+id/scrollView2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/calendar"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -26,19 +28,20 @@
                     android:id="@+id/calendarView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#ffffff"></com.stacktips.view.CustomCalendarView>
+                    android:background="#ffffff"/>
             </ScrollView>
 
             <Button
-                android:id="@+id/buttonView"
+                android:id="@+id/timesheet_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="View"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/scrollView2"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2" />
+                app:layout_constraintWidth_percent="0.2"
+                android:textColor="@color/white"
+                android:text="@string/view_time_table"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
