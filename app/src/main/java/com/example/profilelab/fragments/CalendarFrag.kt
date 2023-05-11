@@ -1,46 +1,49 @@
 package com.example.profilelab.fragments
 
+import android.content.ContentValues.TAG
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import com.example.profilelab.AppDB
 import com.example.profilelab.R
 import com.example.profilelab.databinding.FragmentCalendarBinding
-import com.example.profilelab.view_models.CourtViewModel
-import com.example.profilelab.view_models.SportViewModel
+import com.example.profilelab.view_models.FireCourtVM
+import com.example.profilelab.view_models.FireSportVM
+import com.google.firebase.firestore.FirebaseFirestore
 import com.stacktips.view.CalendarListener
 import com.stacktips.view.DayDecorator
 import com.stacktips.view.DayView
 import com.stacktips.view.utils.CalendarUtils
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class CalendarFrag : Fragment() {
 
-    lateinit var db : AppDB
+    val db = FirebaseFirestore.getInstance()
     var selectedDate: String = ""
     var descriptionText: String = ""
-    var selectedCourt : Int = -1
-    var selectedSport : Int = -1
+    var selectedCourt : String = null.toString()
+    var selectedSport : String = null.toString()
+    var courtLoc :String = null.toString()
+    var courtName :String = null.toString()
     private lateinit var binding: FragmentCalendarBinding
 
-    val courtData = ArrayList<CourtViewModel>()
-    val sportData = ArrayList<SportViewModel>()
-    private lateinit var courtAdapter: ArrayAdapter<CourtViewModel>
-    private lateinit var sportAdapter: ArrayAdapter<SportViewModel>
+    private val courtData = ArrayList<FireCourtVM>()
+    private val sportData = ArrayList<FireSportVM>()
+    private lateinit var courtAdapter: ArrayAdapter<FireCourtVM>
+    private lateinit var sportAdapter: ArrayAdapter<FireSportVM>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,51 +56,52 @@ class CalendarFrag : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        db = AppDB.getDatabase(requireContext())
-
-        courtAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, courtData)
-        binding.courtSpinner?.adapter = courtAdapter
-        courtAdapter.setDropDownViewResource(R.layout.spinner_row)
         getCourts()
+        courtAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, courtData)
+        binding.courtSpinner.adapter = courtAdapter
+        courtAdapter.setDropDownViewResource(R.layout.spinner_row)
 
-        binding.description?.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable) {
-                descriptionText = s.toString()
-            }
-            override fun beforeTextChanged(s: CharSequence, start: Int,
-                                           count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence, start: Int,
-                                       before: Int, count: Int) {
-            }
-        })
-
-        binding.courtSpinner?.onItemSelectedListener = object :
+        binding.courtSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 selectedCourt = courtData[position].id
-                getSports(courtData[position].id)
-//                Toast.makeText(requireContext(), "" + courtData[position].name+"  :  "+ courtData[position].id, Toast.LENGTH_SHORT).show()
+                courtName = courtData[position].name
+                courtLoc = courtData[position].location["lat"].toString() + "," + courtData[position].location["lon"].toString()
+                getSports(selectedCourt)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // write code to perform some action
             }
         }
-        sportAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sportData)
-        binding.sportSpinner?.adapter = sportAdapter
-        sportAdapter.setDropDownViewResource(R.layout.spinner_row)
 
-        binding.sportSpinner?.onItemSelectedListener = object :
+        sportAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sportData)
+        binding.sportSpinner.adapter = sportAdapter
+        sportAdapter.setDropDownViewResource(R.layout.spinner_row)
+        binding.sportSpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                selectedSport = sportData[position].id
-//                Toast.makeText(requireContext(), "" + sportData[position] + position, Toast.LENGTH_SHORT).show()
+                selectedSport = sportData[position].name
             }
             override fun onNothingSelected(parent: AdapterView<*>) {
                 // write code to perform some action
             }
         }
         //end spinner
+
+        binding.description.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                descriptionText = s.toString()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+            }
+        })
 
         val currentCalendar = Calendar.getInstance(Locale.getDefault())
         val decorators = ArrayList<DayDecorator>()
@@ -106,7 +110,7 @@ class CalendarFrag : Fragment() {
         binding.calendarView.firstDayOfWeek = Calendar.MONDAY
         binding.calendarView.setShowOverflowDate(false)
 
-        binding.calendarView.setDecorators(decorators)
+        binding.calendarView.decorators = decorators
         binding.calendarView.refreshCalendar(currentCalendar)
         binding.calendarView.setCalendarListener(object : CalendarListener {
             override fun onDateSelected(date: Date?) {
@@ -138,8 +142,9 @@ class CalendarFrag : Fragment() {
             if (selectedDate.isNotEmpty()) {
                 bundle.putString("selectedDate", selectedDate)
                 bundle.putString("descriptionText", descriptionText)
-                bundle.putInt("selectedCourt", selectedCourt)
-                bundle.putInt("selectedSport", selectedSport)
+                bundle.putString("selectedCourt", courtName)
+                bundle.putString("courtLoc", courtLoc)
+                bundle.putString("selectedSport", selectedSport)
                 timeSlotFragment.arguments = bundle
                 timeSlotFragment.show(parentFragmentManager, "timeSlotSelect")
             } else
@@ -156,26 +161,40 @@ class CalendarFrag : Fragment() {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun getCourts(): ArrayList<CourtViewModel> {
-        GlobalScope.launch(Dispatchers.IO) {
-            val courts = db.courtDao().getAll()
-            for (court in courts){
-                court.id?.let { CourtViewModel(it, court.name) }?.let { courtData.add(it) }
+    private fun getCourts(){
+        db.collection("courts")
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result) {
+                        document.data["location"]?.let {
+                            document.data["sports"]?.let { it1 ->
+                                courtData.add(
+                                    FireCourtVM(
+                                        document.id,
+                                        document.data["name"].toString(),
+                                        it as HashMap<String, String>,
+                                        it1 as HashMap<Int, String>,
+                                    )
+                                )
+                            }
+                        }
+                            }
+                    courtAdapter.notifyDataSetChanged()
+                } else {
+                    Log.w(TAG, "------> Error getting documents.", task.exception)
+                }
             }
-            courtAdapter.notifyDataSetChanged()
-        }
-        return courtData
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun getSports(courtId:Int){
-        GlobalScope.launch(Dispatchers.IO) {
-            val sports = db.courtSportDao().getInDetail(courtId)
-            requireActivity().runOnUiThread {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getSports(courtId:String){
+        Log.e(TAG, "------> Called getSports")
+        for (court in courtData){
+            if (court.id == courtId){
                 sportData.clear()
-                for (sport in sports) {
-                    sport.id?.let { SportViewModel(it, sport.title) }?.let { sportData.add(it) }
+                for (sport in court.sports){
+                    sportData.add(FireSportVM("1", sport.value))
                 }
                 sportAdapter.notifyDataSetChanged()
             }

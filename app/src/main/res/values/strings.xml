@@ -20,4 +20,5 @@
     <string name="view_time_table">View Time Table</string>
     <string name="court_loading">Loading courts</string>
     <string name="sport_loading">Loading sports</string>
+    <string name="title_activity_about_us">AboutUs</string>
 </resources>

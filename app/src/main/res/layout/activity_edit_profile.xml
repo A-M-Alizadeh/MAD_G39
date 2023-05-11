@@ -4,20 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
     tools:context=".EditProfileActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:id="@+id/imageContainer"
-        app:layout_constraintHeight_percent="0.3333"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/default_profile"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,19 +45,19 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.6666"
+        app:layout_constraintHeight_percent="0.6"
         app:layout_constraintTop_toBottomOf="@+id/imageContainer"
         app:layout_constraintStart_toStartOf="parent">
         <TextView
             android:id="@+id/fullname_label"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_fullName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10sp"/>
+            android:layout_marginTop="10dp"/>
         <EditText
             android:id="@+id/fullname"
             android:textSize="30sp"
@@ -65,11 +67,11 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/fullname_label"
-            android:layout_marginBottom="20sp"
-            android:layout_marginTop="5sp"/>
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="5dp"/>
         <TextView
             android:id="@+id/nickname_label"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -89,7 +91,7 @@
             android:layout_marginTop="5sp"/>
         <TextView
             android:id="@+id/interests_label"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textColor="@color/gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

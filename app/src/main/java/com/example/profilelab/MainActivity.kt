@@ -1,15 +1,17 @@
 package com.example.profilelab
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.profilelab.databinding.ActivityMainBinding
 import com.example.profilelab.fragments.CalendarFrag
 import com.example.profilelab.fragments.MyReserve
 import com.example.profilelab.fragments.Profile
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -52,7 +54,8 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this@MainActivity, "First Item Clicked", Toast.LENGTH_SHORT).show()
                     }
                     R.id.secondtItem -> {
-                        Toast.makeText(this@MainActivity, "Second Item Clicked", Toast.LENGTH_SHORT).show()
+                        val secondActivityIntent = Intent(applicationContext, AboutUs::class.java)
+                        startActivity(secondActivityIntent)
                     }
                     R.id.thirdItem -> {
                         Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()

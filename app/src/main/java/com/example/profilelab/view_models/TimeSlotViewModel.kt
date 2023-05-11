@@ -1,10 +1,10 @@
 package com.example.profilelab.view_models
 
 data class TimeSlotViewModel(
-    val id: Int,
+    val id: String,
     val startTime: String,
     val endTime: String,
-    val available: Boolean = true
+    var checked:Boolean = false
 ){
     override fun toString(): String {
         return "$startTime - $endTime"

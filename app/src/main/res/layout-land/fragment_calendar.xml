@@ -6,42 +6,100 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.CalendarFrag">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent"
+        android:id="@+id/calendarContainer">
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            tools:ignore="UselessParent"
-            android:id="@+id/calendarContainer">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="wrap"
+            app:layout_constraintWidth_percent="0.5">
 
-            <ScrollView
-                android:id="@+id/scrollView2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/calendar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_max="wrap"
-                app:layout_constraintWidth_percent="0.8">
-
-                <com.stacktips.view.CustomCalendarView
-                    android:id="@+id/calendarView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#ffffff"/>
-            </ScrollView>
-
-            <Button
-                android:id="@+id/timesheet_btn"
+            <com.stacktips.view.CustomCalendarView
+                android:id="@+id/calendarView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/scrollView2"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.2"
-                android:textColor="@color/white"
-                android:text="@string/view_time_table"/>
+                android:background="#ffffff"></com.stacktips.view.CustomCalendarView>
+        </ScrollView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/scrollView2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBaseline_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select Court"
+                    android:layout_marginHorizontal="8dp"
+                    android:textSize="14sp"/>
+                <Spinner
+                    android:id="@+id/court_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:background="@drawable/border"
+                    android:padding="16dp"
+                    android:layout_margin="8dp"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select Sport"
+                    android:layout_marginHorizontal="8dp"
+                    android:textSize="14sp"/>
+                <Spinner
+                    android:id="@+id/sport_spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:background="@drawable/border"
+                    android:padding="16dp"
+                    android:layout_margin="8dp"
+                    />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter Description"
+                    android:inputType="textMultiLine"
+                    android:layout_margin="8dp"
+                    android:padding="16dp"
+                    android:lines="4"
+                    android:minLines="4"
+                    android:maxLines="8"
+                    android:background="@drawable/border"
+                    android:id="@+id/description"/>
+
+                <Button
+                    android:id="@+id/timesheet_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/court_sport_container"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:textColor="@color/white"
+                    android:text="View Time Table"
+                    android:layout_margin="8dp"
+                    />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

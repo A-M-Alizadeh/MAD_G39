@@ -1,8 +1,11 @@
 
 import android.content.Context
+import android.provider.MediaStore.Audio.Radio
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.profilelab.R
@@ -12,8 +15,7 @@ class TimeAdapter(context: Context, mList: ArrayList <TimeSlotViewModel>, privat
 
 
     private val context: Context
-    private val data : ArrayList<TimeSlotViewModel>
-    var selectedPosition = -1
+    val data : ArrayList<TimeSlotViewModel>
     init {
         this.context = context
         this.data = mList
@@ -28,6 +30,8 @@ class TimeAdapter(context: Context, mList: ArrayList <TimeSlotViewModel>, privat
         val itemsViewModel = data[position]
         holder.start.text = itemsViewModel.startTime
         holder.end.text = itemsViewModel.endTime
+
+        holder.radio.isChecked = itemsViewModel.checked;
     }
 
     override fun getItemCount(): Int {
@@ -38,18 +42,22 @@ class TimeAdapter(context: Context, mList: ArrayList <TimeSlotViewModel>, privat
 
         var start: TextView = itemView.findViewById(R.id.start_time_tv)
         var end: TextView = itemView.findViewById(R.id.end_time_tv)
-        var radio : TextView = itemView.findViewById(R.id.radio_btn)
+        var radio : RadioButton = itemView.findViewById(R.id.radio_btn)
 
         init {
             radio.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
-            listener.onTimeClick(adapterPosition)
+            listener.onTimeClick(bindingAdapterPosition)
+//            Log.e("----->TAG", "radioooo onClick: $adapterPosition")
         }
-    }
 
+
+    }
     interface OnTimeClickListener {
         fun onTimeClick(position: Int)
     }
+
+
 }
