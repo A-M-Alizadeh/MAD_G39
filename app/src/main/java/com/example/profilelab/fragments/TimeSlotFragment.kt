@@ -8,10 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.profilelab.R
 import com.example.profilelab.databinding.TimetableBottomsheetBinding
+import com.example.profilelab.view_models.ReserveViewModel
 import com.example.profilelab.view_models.TimeSlotViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -32,6 +35,7 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
     private var selectedSport : String = ""
     private var courtLoc :String = ""
     var lastCheckedPosition = -1
+    lateinit var reserveViewModel: ReserveViewModel
 
 
     val timeSlotData = ArrayList<TimeSlotViewModel>()
@@ -78,13 +82,11 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
             val myReserve = MyReserve()
             myReserve.arguments = bundle
 
-            //TODO: change fragment should not be done on fail case
-//            val fragmentManager = requireActivity().supportFragmentManager
-//            val fragmentTransaction = fragmentManager.beginTransaction()
-//
-//            fragmentTransaction.replace(R.id.frame_layout, myReserve)
-//            fragmentTransaction.commit()
+            activity?.findViewById<BottomNavigationView>(R.id.bottomNavigationView)?.selectedItemId = R.id.my_reservations
         }
+
+        reserveViewModel = ViewModelProvider(this)[ReserveViewModel::class.java]
+
     }
 
     override fun onCreateView(
@@ -167,15 +169,9 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
                 "status" to true
             )
             Log.e("rsrv", rsrv.toString() + " " + selectedTime.split(","))
-            db.collection("reservations")
-                .add(rsrv)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(
-                        TAG,
-                        "DocumentSnapshot added with ID: " + documentReference.id
-                    )
-                }
-                .addOnFailureListener { e -> Log.w(TAG, "Error adding document", e) }
+
+            reserveViewModel.add(rsrv)
+
                 requireActivity().runOnUiThread {
                     selectedTime = ""
                     selectedDate = ""

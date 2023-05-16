@@ -30,16 +30,16 @@ class Splash : AppCompatActivity() {
         animationView.loop(true)
         animationView.playAnimation()
 
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            if (checkDatabase()) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (checkDatabase()) {
                 val mInHome = Intent(this@Splash, MainActivity::class.java)
                 this@Splash.startActivity(mInHome)
                 this@Splash.finish()
-//            } else {
-//                Toast.makeText(this, "Database not created", Toast.LENGTH_SHORT).show()
-//            }
-//
-//        }, 500)
+            } else {
+                Toast.makeText(this, "Database not created", Toast.LENGTH_SHORT).show()
+            }
+
+        }, 2000)
     }
 
     private fun checkDatabase(): Boolean {
@@ -66,8 +66,7 @@ class Splash : AppCompatActivity() {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    private fun prepopulateDatabase() : Boolean{
+    private fun prepopulateDatabase(): Boolean {
         Log.e("Database", "Database Prepopulating")
         val db = AppDB.getDatabase(this)
         val sport1 = Sport(1, "Basketball")

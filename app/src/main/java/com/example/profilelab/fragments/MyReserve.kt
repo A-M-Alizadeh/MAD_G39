@@ -8,6 +8,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.profilelab.R
 import com.example.profilelab.view_models.ReserveViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.snackbar.Snackbar
 
 class MyReserve : Fragment() {
@@ -73,6 +75,8 @@ class MyReserve : Fragment() {
         setSwipeToDelete()
 
         swipe?.setOnRefreshListener {
+            Log.d("listit", "xaxa")
+
             reserveViewModel.allFullReservations
             swipe?.isRefreshing = false
         }

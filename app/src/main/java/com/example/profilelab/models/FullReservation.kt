@@ -1,8 +1,8 @@
 package com.example.profilelab.models
 
 data class FullReservation (
-    val reservation_id: Int?,
-    val user_id: Int,
+    val reservation_id: String?,
+    val user_id: Long?,
     val court_sports_id: Int,
     val time_slot_id: Int,
     val court: String,
