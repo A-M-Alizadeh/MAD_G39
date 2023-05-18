@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -64,29 +65,57 @@ class AboutUs : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Scaffold() { innerPadding ->
-        LazyColumn(
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = colorResource(R.color.black)),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "MAD G39 2023",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Color.White,
             modifier = Modifier
-                .padding(innerPadding)
-                .clip(shape = RoundedCornerShape(0.dp, 0.dp, 100.dp, 100.dp))
-                .background(color = colorResource(R.color.red_500)),
-            //contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            item{
-                Text(
-                    text = "MAD G39 2023",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(align = androidx.compose.ui.Alignment.Center)
-                        .padding(horizontal = 16.dp)
-                        .padding(vertical = 20.dp)
-                )
-            }
-        }
+                .fillMaxWidth()
+                .wrapContentSize(align = Alignment.Center)
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 20.dp)
+        )
+        Text(
+            text = "To Be Implemented",
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentSize(align = Alignment.Center)
+                .padding(horizontal = 16.dp)
+                .padding(vertical = 20.dp)
+        )
+
     }
+//    Scaffold() { innerPadding ->
+//        LazyColumn(
+//            modifier = Modifier
+//                .padding(innerPadding)
+//                .clip(shape = RoundedCornerShape(0.dp, 0.dp, 100.dp, 100.dp))
+//                .background(color = colorResource(R.color.red_500)),
+//            //contentPadding = innerPadding,
+//            verticalArrangement = Arrangement.spacedBy(8.dp)
+//        ) {
+//            item{
+//                Text(
+//                    text = "MAD G39 2023",
+//                    style = MaterialTheme.typography.headlineMedium,
+//                    color = Color.White,
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .wrapContentSize(align = androidx.compose.ui.Alignment.Center)
+//                        .padding(horizontal = 16.dp)
+//                        .padding(vertical = 20.dp)
+//                )
+//            }
+//        }
+//    }
 }
 
 @Preview(showBackground = true)

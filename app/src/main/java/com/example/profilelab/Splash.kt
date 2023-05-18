@@ -31,14 +31,10 @@ class Splash : AppCompatActivity() {
         animationView.playAnimation()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            if (checkDatabase()) {
-                val mInHome = Intent(this@Splash, MainActivity::class.java)
-                this@Splash.startActivity(mInHome)
-                this@Splash.finish()
-            } else {
-                Toast.makeText(this, "Database not created", Toast.LENGTH_SHORT).show()
-            }
-
+            //TODO: Check if user is Logged in or connected to internet
+            val mInHome = Intent(this@Splash, Login::class.java)
+            this@Splash.startActivity(mInHome)
+            this@Splash.finish()
         }, 2000)
     }
 

@@ -21,4 +21,8 @@
     <string name="court_loading">Loading courts</string>
     <string name="sport_loading">Loading sports</string>
     <string name="title_activity_about_us">AboutUs</string>
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_register">Register</string>
+    <string name="title_activity_courts">Courts</string>
+    <string name="title_activity_friends">Friends</string>
 </resources>

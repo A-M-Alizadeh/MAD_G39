@@ -3,7 +3,8 @@ package com.example.profilelab
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
+import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import com.example.profilelab.databinding.ActivityMainBinding
 import com.example.profilelab.fragments.CalendarFrag
 import com.example.profilelab.fragments.MyReserve
 import com.example.profilelab.fragments.Profile
+import com.google.android.material.navigation.NavigationView
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,18 +53,22 @@ class MainActivity : AppCompatActivity() {
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
                     R.id.firstItem -> {
-                        Toast.makeText(this@MainActivity, "First Item Clicked", Toast.LENGTH_SHORT).show()
+                        val third = Intent(applicationContext, Friends::class.java)
+                        startActivity(third)
                     }
                     R.id.secondtItem -> {
                         val secondActivityIntent = Intent(applicationContext, AboutUs::class.java)
                         startActivity(secondActivityIntent)
                     }
                     R.id.thirdItem -> {
-                        Toast.makeText(this@MainActivity, "third Item Clicked", Toast.LENGTH_SHORT).show()
+                        val third = Intent(applicationContext, Courts::class.java)
+                        startActivity(third)
                     }
                 }
                 true
             }
+
+//            drawerLayout.findViewById<NavigationView>(R.id.nav_view).getHeaderView(0).findViewById<ImageView>(R.id.nav_header_image)
         }
     }
 

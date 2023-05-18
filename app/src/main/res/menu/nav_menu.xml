@@ -2,11 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/firstItem"
-        android:title="Setting" />
+        android:title="Friends" />
+    <item
+        android:id="@+id/thirdItem"
+        android:title="Courts" />
     <item
         android:id="@+id/secondtItem"
         android:title="About Us" />
-    <item
-        android:id="@+id/thirdItem"
-        android:title="Info" />
+
 </menu>
