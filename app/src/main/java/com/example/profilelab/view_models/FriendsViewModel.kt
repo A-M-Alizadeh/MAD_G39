@@ -28,6 +28,7 @@ class FriendsViewModel: ViewModel(){
                             document.id,
                             document.data["username"] as String,
                             document.data["nickname"] as String,
+                            document.data["interests"] as ArrayList<String>
                         )
                     )
                 }

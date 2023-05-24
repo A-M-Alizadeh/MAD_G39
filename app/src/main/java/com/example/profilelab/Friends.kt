@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,8 +42,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -51,6 +56,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.profilelab.ui.theme.ProfileLabTheme
 import com.example.profilelab.view_models.Friend
 import com.example.profilelab.view_models.FriendsViewModel
+import com.google.common.io.Files.append
 
 
 class Friends : ComponentActivity() {
@@ -139,8 +145,10 @@ fun FriendCard(emp: Friend) {
                 bottom = 0.dp
             )
             .background(color = Color.White)) {
-            Column(modifier = Modifier.weight(1f),
-                Arrangement.Center) {
+            Column(
+                modifier = Modifier.weight(1f),
+                Arrangement.Center
+            ) {
                 Text(
                     text = emp.nickname,
                     style = TextStyle(
@@ -151,13 +159,47 @@ fun FriendCard(emp: Friend) {
                 )
 
                 Spacer(modifier = Modifier.padding(5.dp))
-                Text(
-                    text = "Email : ${emp.username}",
+                Text(buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                        append("Email: ")
+                    }
+                    append(emp.username)
+                },
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = 15.sp
                     )
                 )
+//                Text(
+//                    text = "Email : ${emp.username}",
+//                    style = TextStyle(
+//                        color = Color.Black,
+//                        fontSize = 15.sp
+//                    )
+//                )
+
+                Spacer(modifier = Modifier.padding(5.dp))
+                Row() {
+                    emp.interests?.map { interest ->
+                        Text(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .border(
+                                    1.dp,
+                                    colorResource(id = R.color.white),
+                                    RoundedCornerShape(50.dp)
+                                )
+                                .background(Color(0xFFF5F5F5), RoundedCornerShape(50.dp))
+                                .padding(5.dp),
+                            text = interest,
+                            style = TextStyle(
+                                color = Color.Black,
+                                fontSize = 8.sp
+                            )
+                        )
+                    }
+
+                }
             }
 
             GlideImage(
@@ -173,6 +215,9 @@ fun FriendCard(emp: Friend) {
         TextButton(
             modifier = Modifier
                 .padding(vertical = 0.dp, horizontal = 8.dp),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Color(0xFF388E3C),
+            ),
             onClick = { /* Do something! */ }) {
             Text("Connect +")
         }

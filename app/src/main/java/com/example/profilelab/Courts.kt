@@ -159,11 +159,11 @@ fun EmployeeCard(emp: FireCourt) {
                 )
             }
             GlideImage(
-                model = "https://picsum.photos/200",
+                model = "https://picsum.photos/200?blur?random=${emp.id}",
                 contentDescription = "Image",
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(80.dp)
+                    .size(100.dp)
                     .clip((RoundedCornerShape(16.dp)))
             )
         }

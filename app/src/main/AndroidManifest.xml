@@ -23,14 +23,17 @@
             android:exported="true"
             android:label="@string/title_activity_friends"
             android:theme="@style/Theme.ProfileLab" >
-
         </activity>
         <activity
             android:name=".Courts"
             android:exported="true"
             android:label="@string/title_activity_courts"
             android:theme="@style/Theme.ProfileLab" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Register"
@@ -53,11 +56,6 @@
         <activity
             android:name=".Splash"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"

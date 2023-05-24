@@ -350,7 +350,7 @@ fun register(name: String) {
                                 Toast.makeText(mContext, "Passwords don't match", Toast.LENGTH_SHORT).show()
                                 return@Button
                             }
-                            signUp(username.value.text, nickname.value.text, password.value.text, mContext)
+                            signUp(username.value.text, nickname.value.text, password.value.text, mContext, interestList)
                         return@Button
                     }
                     Toast.makeText(mContext, "Please fill all fields", Toast.LENGTH_SHORT).show()
@@ -368,17 +368,23 @@ fun register(name: String) {
     }
 }
 
-fun signUp(username: String,nickname:String, passwrod: String, mContext: Context) {
+fun signUp(username: String,nickname:String, passwrod: String, mContext: Context, interests: List<Interest>) {
     FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val user = FirebaseAuth.getInstance().currentUser
                 val db = FirebaseFirestore.getInstance()
+                val interestz = arrayListOf<String>()
+                interests.map { interest ->
+                    if (interest.selected){
+                        interestz.add(interest.title)
+                    }}
                 val userMap = hashMapOf(
                     "username" to username,
                     "nickname" to nickname,
                     "password" to passwrod,
-                    "friends" to arrayListOf<Friend>(),
+                    "interests" to interestz,
+                    "friends" to ArrayList<Friend>(),
                 )
                 db.collection("users").document(user?.uid.toString()).set(userMap)
                     .addOnSuccessListener {
