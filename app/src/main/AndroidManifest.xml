@@ -23,18 +23,22 @@
             android:exported="true"
             android:label="@string/title_activity_friends"
             android:theme="@style/Theme.ProfileLab" >
+
         </activity>
         <activity
             android:name=".Courts"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_courts"
             android:theme="@style/Theme.ProfileLab" >
+
         </activity>
         <activity
             android:name=".Register"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/title_activity_register"
-            android:theme="@style/Theme.ProfileLab" />
+            android:theme="@style/Theme.ProfileLab" >
+
+        </activity>
         <activity
             android:name=".Login"
             android:exported="false"

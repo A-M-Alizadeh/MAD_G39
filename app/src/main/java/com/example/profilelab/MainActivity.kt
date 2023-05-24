@@ -14,6 +14,8 @@ import com.example.profilelab.fragments.CalendarFrag
 import com.example.profilelab.fragments.MyReserve
 import com.example.profilelab.fragments.Profile
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : AppCompatActivity() {
@@ -65,6 +67,12 @@ class MainActivity : AppCompatActivity() {
                     R.id.thirdItem -> {
                         val third = Intent(applicationContext, Courts::class.java)
                         startActivity(third)
+                    }
+                    R.id.signOutItem -> {
+                        FirebaseAuth.getInstance().signOut()
+                        val intent = Intent(this@MainActivity, Login::class.java)
+                        startActivity(intent)
+                        finish()
                     }
                 }
                 true

@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.airbnb.lottie.LottieAnimationView
 import com.example.profilelab.models.*
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,11 +34,21 @@ class Splash : AppCompatActivity() {
         animationView.playAnimation()
 
         Handler(Looper.getMainLooper()).postDelayed({
-            //TODO: Check if user is Logged in or connected to internet
-            val mInHome = Intent(this@Splash, Login::class.java)
-            this@Splash.startActivity(mInHome)
-            this@Splash.finish()
+            firebaseAuthCheck()
         }, 2000)
+    }
+
+    private fun firebaseAuthCheck() {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val mInHome = Intent(this@Splash, MainActivity::class.java)
+            startActivity(mInHome)
+            finish()
+        }else{
+            val mInHome = Intent(this@Splash, Login::class.java)
+            startActivity(mInHome)
+            finish()
+        }
     }
 
     private fun checkDatabase(): Boolean {

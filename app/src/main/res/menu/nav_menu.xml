@@ -2,12 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/firstItem"
-        android:title="Friends" />
+        android:title="Friends"
+        android:icon="@drawable/ic_friends"/>
     <item
         android:id="@+id/thirdItem"
-        android:title="Courts" />
+        android:title="Courts"
+        android:icon="@drawable/ic_sports"/>
+
     <item
         android:id="@+id/secondtItem"
+        android:icon="@drawable/ic_info"
         android:title="About Us" />
-
+    <item
+        android:id="@+id/signOutItem"
+        android:title="Sign Out"
+        android:icon="@drawable/ic_logout" />
 </menu>

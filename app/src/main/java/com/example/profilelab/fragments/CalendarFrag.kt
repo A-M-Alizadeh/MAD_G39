@@ -17,7 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.example.profilelab.R
 import com.example.profilelab.databinding.FragmentCalendarBinding
-import com.example.profilelab.view_models.FireCourtVM
+import com.example.profilelab.view_models.FireCourt
 import com.example.profilelab.view_models.FireSportVM
 import com.google.firebase.firestore.FirebaseFirestore
 import com.stacktips.view.CalendarListener
@@ -40,9 +40,9 @@ class CalendarFrag : Fragment() {
     var courtName :String = null.toString()
     private lateinit var binding: FragmentCalendarBinding
 
-    private val courtData = ArrayList<FireCourtVM>()
+    private val courtData = ArrayList<FireCourt>()
     private val sportData = ArrayList<FireSportVM>()
-    private lateinit var courtAdapter: ArrayAdapter<FireCourtVM>
+    private lateinit var courtAdapter: ArrayAdapter<FireCourt>
     private lateinit var sportAdapter: ArrayAdapter<FireSportVM>
 
     override fun onCreateView(
@@ -170,11 +170,12 @@ class CalendarFrag : Fragment() {
                         document.data["location"]?.let {
                             document.data["sports"]?.let { it1 ->
                                 courtData.add(
-                                    FireCourtVM(
+                                    FireCourt(
                                         document.id,
                                         document.data["name"].toString(),
-                                        it as HashMap<String, String>,
-                                        it1 as HashMap<Int, String>,
+                                        it as HashMap<String, Double>,
+                                        it1 as HashMap<String, String>,
+                                        document.data["address"].toString()
                                     )
                                 )
                             }
