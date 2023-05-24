@@ -1,12 +1,15 @@
 package com.example.profilelab
 
-import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,24 +18,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Lock
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,22 +58,82 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.profilelab.ui.theme.ProfileLabTheme
-import com.google.android.material.snackbar.Snackbar
+import com.example.profilelab.view_models.Friend
+import com.example.profilelab.view_models.Interest
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
+val tempList = listOf(
+    "soccer",
+    "basketball",
+    "tennis",
+    "baseball",
+    "golf",
+    "running",
+    "volleyball",
+    "badminton",
+    "swimming",
+    "boxing",
+    "table tennis",
+    "skiing",
+    "ice skating",
+    "roller skating",
+    "cricket",
+    "rugby",
+    "pool",
+    "darts",
+    "football",
+    "bowling",
+    "ice hockey",
+    "surfing",
+    "karate",
+    "horse racing",
+    "snowboarding",
+    "skateboarding",
+    "cycling",
+    "archery",
+    "fishing",
+    "gymnastics",
+    "figure skating",
+    "rock climbing",
+    "sumo wrestling",
+    "taekwondo",
+    "fencing",
+    "water skiing",
+    "jet skiing",
+    "weight lifting",
+    "scuba diving",
+    "judo",
+    "wind surfing",
+    "kickboxing",
+    "sky diving",
+    "hang gliding",
+    "bungee jumping",
+)
 class Register : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContent {
+            this.window.statusBarColor = ContextCompat.getColor(this,R.color.red_700)
+
+//            val interestVM = ViewModelProvider(this)[InterestViewModel::class.java]
+//            val interestList = remember { mutableStateOf(listOf<Interest>()) }
+//            interestVM.interests.observe(this) {
+//                interestList.value = it
+//            }
+
             ProfileLabTheme {
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    register("Android")
+                    register("Register")
                 }
             }
         }
@@ -73,7 +142,27 @@ class Register : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun register(name: String, modifier: Modifier = Modifier) {
+fun register(name: String) {
+    val mContext = LocalContext.current
+    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        ClickableText(
+            text = AnnotatedString("Already have an account? Sign in"),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(20.dp),
+            onClick = {
+                onBackPressedDispatcher?.onBackPressed()
+            },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                textDecoration = TextDecoration.Underline,
+                color = colorResource(id = R.color.black)
+            )
+        )
+    }
     Column(
         modifier = Modifier.padding(20.dp),
         verticalArrangement = Arrangement.Center,
@@ -81,23 +170,101 @@ fun register(name: String, modifier: Modifier = Modifier) {
     ) {
 
         val username = remember { mutableStateOf(TextFieldValue()) }
+        val nickname = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
         val repeatPassword = remember { mutableStateOf(TextFieldValue()) }
+
+
+//        val interestVM = ViewModelProvider(mContext as ComponentActivity)[InterestViewModel::class.java]
+//        var interestList by remember { mutableStateOf(listOf<Interest>()) }
+//        interestVM.interests.observe(mContext) {
+//            interestList = it
+//        }
+
+        var interestList by remember { mutableStateOf(
+            tempList.mapIndexed { index, it ->
+                Interest(
+                    index,
+                    it,
+                    false
+                )
+            }
+        ) }
+
 
         Text(text = "Register", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
             label = { Text(text = "Username") },
-            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                unfocusedIndicatorColor = Color.Transparent,
+                placeholderColor = Color.LightGray,
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                unfocusedLabelColor = Color.LightGray,
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Email Icon",
+                    tint = Color.LightGray
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp))
+                .background(color = Color.White),
             value = username.value,
             onValueChange = { username.value = it })
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
+            label = { Text(text = "NickName") },
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                unfocusedIndicatorColor = Color.Transparent,
+                placeholderColor = Color.LightGray,
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                unfocusedLabelColor = Color.LightGray,
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Face,
+                    contentDescription = "Email Icon",
+                    tint = Color.LightGray
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
+            value = nickname.value,
+            onValueChange = { nickname.value = it })
+
+        Spacer(modifier = Modifier.height(20.dp))
+        TextField(
             label = { Text(text = "Password") },
             value = password.value,
-            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                unfocusedIndicatorColor = Color.Transparent,
+                placeholderColor = Color.LightGray,
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                unfocusedLabelColor = Color.LightGray,
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Email Icon",
+                    tint = Color.LightGray
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { password.value = it })
@@ -106,15 +273,89 @@ fun register(name: String, modifier: Modifier = Modifier) {
         TextField(
             label = { Text(text = "Repeat Password") },
             value = repeatPassword.value,
-            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                unfocusedIndicatorColor = Color.Transparent,
+                placeholderColor = Color.LightGray,
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                unfocusedLabelColor = Color.LightGray,
+            ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Email Icon",
+                    tint = Color.LightGray
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { repeatPassword.value = it })
 
+
+        //TODO: Updaing the state of the button
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(text = "Interests", style = TextStyle(fontSize = 20.sp, fontFamily = FontFamily.Cursive))
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyRow(modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)) {
+            items(interestList.size){i->
+                var myModif = Modifier
+                    .padding(all = 4.dp)
+                    .background(Color.White, RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                    .padding(all = 8.dp)
+                var fontColor = Color.Black
+                    if (interestList[i].selected){
+                        myModif = Modifier
+                            .padding(all = 4.dp)
+                            .background(
+                                colorResource(id = R.color.red_500),
+                                RoundedCornerShape(8.dp)
+                            )
+                            .border(1.dp, Color.White, RoundedCornerShape(8.dp))
+                            .padding(all = 8.dp)
+                        fontColor = Color.White
+                    }
+                Text(
+                    color = fontColor,
+                    text = interestList[i].title,
+                    modifier = myModif.then(Modifier
+                    .clickable {
+                        interestList = interestList.mapIndexed{j, item ->
+                            if (i == j){
+                                item.copy(selected = !item.selected)
+                            }else{
+                                item
+                            }
+                        }
+                }))
+            }
+        }
+
+
         Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
             Button(
-                onClick = { },
+                onClick = {
+                    if (username.value.text.isNotEmpty()
+                        && password.value.text.isNotEmpty()
+                        && repeatPassword.value.text.isNotEmpty()
+                        && nickname.value.text.isNotEmpty()) {
+                            if (password.value.text != repeatPassword.value.text){
+                                Toast.makeText(mContext, "Passwords don't match", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            signUp(username.value.text, nickname.value.text, password.value.text, mContext)
+                        return@Button
+                    }
+                    Toast.makeText(mContext, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    return@Button
+                },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.red_500)),
                 modifier = Modifier
@@ -127,10 +368,36 @@ fun register(name: String, modifier: Modifier = Modifier) {
     }
 }
 
+fun signUp(username: String,nickname:String, passwrod: String, mContext: Context) {
+    FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val user = FirebaseAuth.getInstance().currentUser
+                val db = FirebaseFirestore.getInstance()
+                val userMap = hashMapOf(
+                    "username" to username,
+                    "nickname" to nickname,
+                    "password" to passwrod,
+                    "friends" to arrayListOf<Friend>(),
+                )
+                db.collection("users").document(user?.uid.toString()).set(userMap)
+                    .addOnSuccessListener {
+                        Toast.makeText(mContext, "Registered Successfully", Toast.LENGTH_SHORT).show()
+                        mContext.startActivity(Intent(mContext, Login::class.java))
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+            }
+        }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun registerPreview() {
     ProfileLabTheme {
-        register("Android")
+        register("Register")
     }
 }

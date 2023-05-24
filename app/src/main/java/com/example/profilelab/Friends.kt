@@ -1,11 +1,8 @@
 package com.example.profilelab
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,83 +18,131 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.graphics.toColorInt
-import coil.compose.rememberAsyncImagePainter
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.example.profilelab.ui.theme.ProfileLabTheme
-import com.example.profilelab.view_models.CourtCompleteModel
+import com.example.profilelab.view_models.Friend
+import com.example.profilelab.view_models.FriendsViewModel
 
 
 class Friends : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val friendsVM = ViewModelProvider(this)[FriendsViewModel::class.java]
+            var friendsList = remember { mutableStateOf(listOf<Friend>()) }
+            friendsVM.friendsList.observe(this) {
+                friendsList.value = it
+            }
+
             ProfileLabTheme {
-                val crts = remember { samples.courtsList }
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    modifier = Modifier.background(color = Color(0xFFFAFAFA))
-                        .fillMaxWidth().fillMaxHeight()
-                ) {
-                    items(crts) {
-                        FriendCard(emp = it)
+                Column() {
+                    TopAppBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = Color.Red),
+                        title = {
+                            Text(text = "Friends")
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                finish()
+                            }) {
+                                Icon(Icons.Filled.ArrowBack, "backIcon")
+                            }
+                        },
+                    )
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .background(color = Color(0xFFFAFAFA))
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        items(
+                            items = friendsList.value,
+                            key = { it.id }
+                        ) {
+                            FriendCard(emp = it)
+                        }
                     }
                 }
+
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun FriendCard(emp: CourtCompleteModel) {
+fun FriendCard(emp: Friend) {
 
     val mContext = LocalContext.current
     Card(
         modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(
+                start = 8.dp,
+                top = 8.dp,
+                end = 8.dp,
+                bottom = 0.dp
+            )
             .fillMaxWidth()
-            .background(color = Color(0xFFFAFAFA)),
+            .background(color = Color(0xFFFAFAFA)), //Color(0xFFFAFAFA)
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
         ),
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         onClick = {
-            val intent = Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345")
-            )
-            mContext.startActivity(intent)
         },
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = Color.White, //Color.White
         ),
 
         ) {
 
-        Row(modifier = Modifier.padding(20.dp)) {
+        Row(modifier = Modifier
+            .padding(
+                start = 20.dp,
+                top = 20.dp,
+                end = 20.dp,
+                bottom = 0.dp
+            )
+            .background(color = Color.White)) {
             Column(modifier = Modifier.weight(1f),
                 Arrangement.Center) {
                 Text(
-                    text = emp.name,
+                    text = emp.nickname,
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = 22.sp,
@@ -107,22 +152,29 @@ fun FriendCard(emp: CourtCompleteModel) {
 
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(
-                    text = "Address : " + "This is the Address of the Court if you tap on it it will take you to the map",
+                    text = "Email : ${emp.username}",
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = 15.sp
                     )
                 )
             }
-            Image(
-                painter = rememberAsyncImagePainter("https://picsum.photos/200"),
-                contentDescription = "Profile Image",
-                contentScale = ContentScale.FillHeight,
+
+            GlideImage(
+                model = "https://xsgames.co/randomusers/assets/avatars/male/${(0..50).random()}.jpg",
+                contentDescription = "Image",
                 modifier = Modifier
                     .padding(8.dp)
-                    .size(110.dp)
+                    .size(80.dp)
                     .clip((CircleShape))
             )
+
+        }
+        TextButton(
+            modifier = Modifier
+                .padding(vertical = 0.dp, horizontal = 8.dp),
+            onClick = { /* Do something! */ }) {
+            Text("Connect +")
         }
     }
 }
