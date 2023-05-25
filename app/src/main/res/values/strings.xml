@@ -25,4 +25,5 @@
     <string name="title_activity_register">Register</string>
     <string name="title_activity_courts">Courts</string>
     <string name="title_activity_friends">Friends</string>
+    <string name="title_activity_court_detail">CourtDetail</string>
 </resources>

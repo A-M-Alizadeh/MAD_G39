@@ -169,13 +169,15 @@ class CalendarFrag : Fragment() {
                     for (document in task.result) {
                         document.data["location"]?.let {
                             document.data["sports"]?.let { it1 ->
+                                Log.e("TAG", "---=>* ${document.data["rate"]!!::class.simpleName}")
                                 courtData.add(
                                     FireCourt(
                                         document.id,
                                         document.data["name"].toString(),
                                         it as HashMap<String, Double>,
                                         it1 as HashMap<String, String>,
-                                        document.data["address"].toString()
+                                        document.data["address"].toString(),
+                                        document.getDouble("rate") as Double,
                                     )
                                 )
                             }

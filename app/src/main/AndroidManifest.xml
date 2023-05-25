@@ -19,35 +19,32 @@
         android:theme="@style/Theme.ProfileLab"
         tools:targetApi="31">
         <activity
+            android:name=".CourtDetail"
+            android:exported="false"
+            android:label="@string/title_activity_court_detail"
+            android:theme="@style/Theme.ProfileLab" />
+        <activity
             android:name=".Friends"
             android:exported="true"
             android:label="@string/title_activity_friends"
-            android:theme="@style/Theme.ProfileLab" >
-        </activity>
+            android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".Courts"
             android:exported="true"
             android:label="@string/title_activity_courts"
-            android:theme="@style/Theme.ProfileLab" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/Theme.ProfileLab">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Register"
             android:exported="true"
             android:label="@string/title_activity_register"
-            android:theme="@style/Theme.ProfileLab" >
-
-        </activity>
+            android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".Login"
             android:exported="false"
             android:label="@string/title_activity_login"
-            android:theme="@style/Theme.ProfileLab">
-        </activity>
+            android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".AboutUs"
             android:exported="false"
@@ -55,7 +52,12 @@
             android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".Splash"
-            android:exported="true" >
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
