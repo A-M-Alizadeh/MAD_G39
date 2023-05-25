@@ -1,5 +1,6 @@
 package com.example.profilelab
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,6 +22,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ButtonDefaults
@@ -53,8 +55,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.profilelab.models.FireUser
 import com.example.profilelab.ui.theme.ProfileLabTheme
+import com.example.profilelab.view_models.FireUserViewModel
 import com.example.profilelab.view_models.Friend
+import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.FriendsViewModel
 import com.google.common.io.Files.append
 
@@ -65,10 +70,11 @@ class Friends : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val friendsVM = ViewModelProvider(this)[FriendsViewModel::class.java]
-            var friendsList = remember { mutableStateOf(listOf<Friend>()) }
-            friendsVM.friendsList.observe(this) {
-                friendsList.value = it
+            val mContext = LocalContext.current
+            val usersVM = ViewModelProvider(this)[FireUserViewModel::class.java]
+            var usersList = remember { mutableStateOf(listOf<FireUser>()) }
+            usersVM.usersList.observe(this) {
+                usersList.value = it
             }
 
             ProfileLabTheme {
@@ -78,7 +84,7 @@ class Friends : ComponentActivity() {
                             .fillMaxWidth()
                             .background(color = Color.Red),
                         title = {
-                            Text(text = "Friends")
+                            Text(text = "People")
                         },
                         navigationIcon = {
                             IconButton(onClick = {
@@ -87,6 +93,14 @@ class Friends : ComponentActivity() {
                                 Icon(Icons.Filled.ArrowBack, "backIcon")
                             }
                         },
+                        actions = {
+                            IconButton(onClick = {
+                                val intent = Intent(mContext, FriendsContainer::class.java)
+                                startActivity(intent)
+                            }) {
+                                Icon(Icons.Filled.Person, "settingsIcon")
+                            }
+                        }
                     )
                     LazyColumn(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
@@ -96,10 +110,10 @@ class Friends : ComponentActivity() {
                             .fillMaxHeight()
                     ) {
                         items(
-                            items = friendsList.value,
+                            items = usersList.value,
                             key = { it.id }
                         ) {
-                            FriendCard(emp = it)
+                            FriendCard(emp = it, usersVM)
                         }
                     }
                 }
@@ -112,7 +126,7 @@ class Friends : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
 @Composable
-fun FriendCard(emp: Friend) {
+fun FriendCard(emp: FireUser, usersVM: FireUserViewModel){
 
     val mContext = LocalContext.current
     Card(
@@ -218,7 +232,20 @@ fun FriendCard(emp: Friend) {
             colors = ButtonDefaults.textButtonColors(
                 contentColor = Color(0xFF388E3C),
             ),
-            onClick = { /* Do something! */ }) {
+            onClick = {
+                usersVM.sendFriendRequest(
+                    FriendRequest(
+                        emp.id,
+                        false,
+                        Friend(
+                            emp.id,
+                            emp.nickname,
+                            emp.username,
+                            emp.interests
+                        )
+                    )
+                )
+            }) {
             Text("Connect +")
         }
     }

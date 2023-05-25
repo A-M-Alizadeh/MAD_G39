@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.profilelab.ui.theme.ProfileLabTheme
 import com.example.profilelab.view_models.Friend
+import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.Interest
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -385,6 +386,7 @@ fun signUp(username: String,nickname:String, passwrod: String, mContext: Context
                     "password" to passwrod,
                     "interests" to interestz,
                     "friends" to ArrayList<Friend>(),
+                    "friendRequests" to ArrayList<FriendRequest>(),
                 )
                 db.collection("users").document(user?.uid.toString()).set(userMap)
                     .addOnSuccessListener {

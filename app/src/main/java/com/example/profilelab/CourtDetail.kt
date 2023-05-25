@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -121,11 +122,11 @@ class CourtDetail : ComponentActivity() {
                         model = "https://picsum.photos/500/200",
                         contentDescription = "Image",
                         modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.2f)
-                        .background(color = Color.White)
-                        .clip((RoundedCornerShape(8.dp))), contentScale = ContentScale.FillBounds,)
+                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .fillMaxHeight(0.2f)
+                            .background(color = Color.White)
+                            .clip((RoundedCornerShape(8.dp))), contentScale = ContentScale.FillBounds,)
 
                         //detail content
                         //detail content
@@ -133,15 +134,15 @@ class CourtDetail : ComponentActivity() {
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.Bottom,
                         modifier = Modifier
-                        .fillMaxWidth()
+                            .fillMaxWidth()
                             .padding(8.dp)
                             .padding(bottom = 8.dp)
-                        .background(color = Color(0xFFFAFAFA))
+                            .background(color = Color(0xFFFAFAFA))
                         ){
                             Icon(
                                 Icons.Filled.LocationOn,
                                 "LocationIcon",
-                                tint = Color.Blue,
+                                tint = colorResource(id = R.color.info_blue),
                             )
                             Text(
                                 modifier = Modifier
@@ -153,7 +154,7 @@ class CourtDetail : ComponentActivity() {
                                         mContext.startActivity(mapIntent)
                                     }),
                                 text = "See Location on Map",
-                                color = Color.Blue,
+                                color = colorResource(id = R.color.info_blue),
                             )
                         }
 

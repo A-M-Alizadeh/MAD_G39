@@ -19,6 +19,13 @@
         android:theme="@style/Theme.ProfileLab"
         tools:targetApi="31">
         <activity
+            android:name=".FriendsContainer"
+            android:exported="true"
+            android:label="@string/title_activity_friends_container"
+            android:theme="@style/Theme.ProfileLab" >
+
+        </activity>
+        <activity
             android:name=".CourtDetail"
             android:exported="false"
             android:label="@string/title_activity_court_detail"
@@ -27,14 +34,18 @@
             android:name=".Friends"
             android:exported="true"
             android:label="@string/title_activity_friends"
-            android:theme="@style/Theme.ProfileLab" />
+            android:theme="@style/Theme.ProfileLab">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".Courts"
             android:exported="true"
             android:label="@string/title_activity_courts"
-            android:theme="@style/Theme.ProfileLab">
-
-        </activity>
+            android:theme="@style/Theme.ProfileLab"></activity>
         <activity
             android:name=".Register"
             android:exported="true"
@@ -52,13 +63,7 @@
             android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".Splash"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="false" />
