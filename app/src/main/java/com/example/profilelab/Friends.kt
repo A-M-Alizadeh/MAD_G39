@@ -233,18 +233,7 @@ fun FriendCard(emp: FireUser, usersVM: FireUserViewModel){
                 contentColor = Color(0xFF388E3C),
             ),
             onClick = {
-                usersVM.sendFriendRequest(
-                    FriendRequest(
-                        emp.id,
-                        false,
-                        Friend(
-                            emp.id,
-                            emp.nickname,
-                            emp.username,
-                            emp.interests
-                        )
-                    )
-                )
+                usersVM.sendFriendRequest(emp)
             }) {
             Text("Connect +")
         }
