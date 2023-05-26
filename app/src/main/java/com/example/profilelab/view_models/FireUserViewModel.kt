@@ -1,20 +1,18 @@
 package com.example.profilelab.view_models
 
 import android.content.ContentValues.TAG
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.profilelab.Login
 import com.example.profilelab.models.FireUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
+import kotlin.math.log
 
 class FireUserViewModel: ViewModel(){
-    val usersList : MutableLiveData<List<FireUser>> by lazy {
-        MutableLiveData<List<FireUser>>()
+    val usersList : MutableLiveData<SnapshotStateList<FireUser>> by lazy {
+        MutableLiveData<SnapshotStateList<FireUser>>()
     }
     val currentUser: MutableLiveData<FireUser> by lazy {
         MutableLiveData<FireUser>()
@@ -29,13 +27,41 @@ class FireUserViewModel: ViewModel(){
 
     fun getPeople() {
         val user = FirebaseAuth.getInstance().currentUser
-        val users = arrayListOf<FireUser>()
+        val users = SnapshotStateList<FireUser>()
+//        val allRequests = findRequests()
+
+
+        //lets see
+        var allRequests = arrayListOf<String>()
+        db.collection("friendship")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if ((document.data["receiverId"] == user?.uid.toString()
+                                || document.data["senderId"] == user?.uid.toString() )
+                        && (document.data["status"] == 2.toLong()
+                                || document.data["status"] == 0.toLong())) {
+//                        Log.d("requests", "111111> "+document.data)
+                        if (document.data["receiverId"] == user?.uid.toString())
+                            allRequests.add(document.data["senderId"] as String)
+                        else
+                            allRequests.add(document.data["receiverId"] as String)
+                    }
+                }
+//                Log.d("requests", "000000> "+allRequests.distinct().toList().toString())
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting Users(Friends) documents.", exception)
+            }
+        //lets see
 
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    if (document.id==user?.uid.toString()) {
+                    Log.e(TAG, "what does it have ? $allRequests")
+
+                    if (allRequests.contains(document.id) || document.id == user?.uid.toString()) {
                         continue
                     }
                     else {
@@ -68,6 +94,10 @@ class FireUserViewModel: ViewModel(){
         db.collection("friendship")
             .add(friendRequestData)
             .addOnSuccessListener {
+
+                usersList.value?.removeIf { it.id == guy.id }
+                usersList.postValue(usersList.value)
+
                 Log.d(TAG, "DocumentSnapshot successfully written!")
             }
             .addOnFailureListener {
@@ -96,6 +126,33 @@ class FireUserViewModel: ViewModel(){
             .addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting Users(Friends) documents.", exception)
             }
+    }
+
+    fun findRequests():List<String>{
+        var currentUser = FirebaseAuth.getInstance().currentUser
+        var requests = arrayListOf<String>()
+
+        db.collection("friendship")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if ((document.data["receiverId"] == currentUser?.uid.toString()
+                                || document.data["senderId"] == currentUser?.uid.toString() )
+                        && (document.data["status"] == 2.toLong())) {
+                        Log.d("requests", "=======Came Here =========")
+                        Log.d("requests", document.data.toString())
+                        if (document.data["receiverId"] == currentUser?.uid.toString())
+                            requests.add(document.data["senderId"] as String)
+                        else
+                            requests.add(document.data["receiverId"] as String)
+                    }
+                }
+                Log.d("requests", requests.distinct().toList().toString())
+            }
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting Users(Friends) documents.", exception)
+            }
+        return requests
     }
 
 }

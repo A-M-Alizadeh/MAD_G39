@@ -1,12 +1,10 @@
 package com.example.profilelab
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,12 +24,9 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,9 +60,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.profilelab.models.FireUser
 import com.example.profilelab.ui.theme.ProfileLabTheme
-import com.example.profilelab.view_models.FireUserViewModel
 import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.FriendsViewModel
 import kotlinx.coroutines.launch
@@ -188,7 +181,7 @@ private fun RequestTab(
         ) {
             items(
                 items = data,//listOf('a', 'b', 'c'),
-                key = { it.id }
+                key = { it.id },
             ) {
                 FriendCard(type="request",request = it, friendRequestVM = friendRequestVM)
             }
