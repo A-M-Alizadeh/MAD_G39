@@ -39,7 +39,7 @@ class FireUserViewModel: ViewModel(){
                 for (document in result) {
                     if ((document.data["receiverId"] == user?.uid.toString()
                                 || document.data["senderId"] == user?.uid.toString() )
-                        && (document.data["status"] == 2.toLong()
+                        && (document.data["status"] == 1.toLong()
                                 || document.data["status"] == 0.toLong())) {
 //                        Log.d("requests", "111111> "+document.data)
                         if (document.data["receiverId"] == user?.uid.toString())
@@ -48,39 +48,43 @@ class FireUserViewModel: ViewModel(){
                             allRequests.add(document.data["receiverId"] as String)
                     }
                 }
-//                Log.d("requests", "000000> "+allRequests.distinct().toList().toString())
+
+                //new
+                db.collection("users")
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            Log.e(TAG, "what does it have ? $allRequests")
+
+                            if (allRequests.contains(document.id)) {
+                                continue
+                            }
+                            else {
+                                users.add(
+                                    FireUser(
+                                        document.id,
+                                        document.data["username"] as String,
+                                        document.data["nickname"] as String,
+                                        document.data["interests"] as ArrayList<String>,
+                                        document.data["fcmToken"] as String,
+                                    )
+                                )
+                            }
+                        }
+                        usersList.postValue(users)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w(TAG, "Error getting Users(Friends) documents.", exception)
+                    }
+                //new
+
             }
             .addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting Users(Friends) documents.", exception)
             }
         //lets see
 
-        db.collection("users")
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    Log.e(TAG, "what does it have ? $allRequests")
 
-                    if (allRequests.contains(document.id) || document.id == user?.uid.toString()) {
-                        continue
-                    }
-                    else {
-                        users.add(
-                            FireUser(
-                                document.id,
-                                document.data["username"] as String,
-                                document.data["nickname"] as String,
-                                document.data["interests"] as ArrayList<String>,
-                                document.data["fcmToken"] as String,
-                            )
-                        )
-                    }
-                }
-                usersList.postValue(users)
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting Users(Friends) documents.", exception)
-            }
     }
 
     fun sendFriendRequest(guy: FireUser){
