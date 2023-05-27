@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 
 class FireNotification(var context: Context, var title: String, var message: String) {
     private val channelID: String = "MADFCM100"
-    private val channelName: String = "FCM Message 100"
+    private val channelName: String = "FCMName100"
     private val notificationManager: NotificationManager = context.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     lateinit var notificationChannel: NotificationChannel
     lateinit var builder: NotificationCompat.Builder

@@ -1,8 +1,10 @@
 package com.example.profilelab
 
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -23,11 +25,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Lock
-
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -60,11 +60,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.profilelab.ui.theme.ProfileLabTheme
-import com.example.profilelab.view_models.Friend
-import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.Interest
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 val tempList = listOf(
@@ -116,7 +116,6 @@ val tempList = listOf(
 )
 class Register : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContent {
             this.window.statusBarColor = ContextCompat.getColor(this,R.color.red_700)
@@ -311,7 +310,7 @@ fun register(name: String) {
                     .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                     .padding(all = 8.dp)
                 var fontColor = Color.Black
-                    if (interestList[i].selected){
+                if (interestList[i].selected){
                         myModif = Modifier
                             .padding(all = 4.dp)
                             .background(
@@ -370,36 +369,50 @@ fun register(name: String) {
 }
 
 fun signUp(username: String,nickname:String, passwrod: String, mContext: Context, interests: List<Interest>) {
-    FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val user = FirebaseAuth.getInstance().currentUser
-                val db = FirebaseFirestore.getInstance()
-                val interestz = arrayListOf<String>()
-                interests.map { interest ->
-                    if (interest.selected){
-                        interestz.add(interest.title)
-                    }}
-                val userMap = hashMapOf(
-                    "username" to username,
-                    "nickname" to nickname,
-                    "password" to passwrod,
-                    "interests" to interestz,
-                    "friends" to ArrayList<Friend>(),
-                    "friendRequests" to ArrayList<FriendRequest>(),
-                )
-                db.collection("users").document(user?.uid.toString()).set(userMap)
-                    .addOnSuccessListener {
-                        Toast.makeText(mContext, "Registered Successfully", Toast.LENGTH_SHORT).show()
-                        mContext.startActivity(Intent(mContext, Login::class.java))
-                    }
-                    .addOnFailureListener {
+    FirebaseMessaging.getInstance().token
+        .addOnCompleteListener(OnCompleteListener<String?> { task ->
+            if (!task.isSuccessful) {
+                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                Log.w(TAG, "------> Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            // Get new FCM registration token
+            val token = task.result
+
+            //old part register
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user = FirebaseAuth.getInstance().currentUser
+                        val db = FirebaseFirestore.getInstance()
+                        val interestz = arrayListOf<String>()
+                        interests.map { interest ->
+                            if (interest.selected){
+                                interestz.add(interest.title)
+                            }}
+                        val userMap = hashMapOf(
+                            "username" to username,
+                            "nickname" to nickname,
+                            "password" to passwrod,
+                            "interests" to interestz,
+                            "fcmToken" to token
+                        )
+                        db.collection("users").document(user?.uid.toString()).set(userMap)
+                            .addOnSuccessListener {
+                                Toast.makeText(mContext, "Registered Successfully", Toast.LENGTH_SHORT).show()
+                                mContext.startActivity(Intent(mContext, Login::class.java))
+                            }
+                            .addOnFailureListener {
+                                Log.d("TAG", "======> Failed to register${it.message}")
+                                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        Log.d("TAG", "======> Failed to register${task.exception?.message}")
                         Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
                     }
-            } else {
-                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
-            }
-        }
+                }
+            //old part register
+        })
 }
 
 @Preview(showBackground = true)

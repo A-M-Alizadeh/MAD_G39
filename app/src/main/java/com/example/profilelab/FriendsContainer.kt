@@ -1,8 +1,11 @@
 package com.example.profilelab
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -60,18 +63,58 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.example.profilelab.models.Data
+import com.example.profilelab.models.NotificationModel
+import com.example.profilelab.view_models.NotificationViewModel
 import com.example.profilelab.ui.theme.ProfileLabTheme
 import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.FriendsViewModel
+import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class FriendsContainer : ComponentActivity() {
-
-
+    private  val TAG = "ContainerActivity"
+    private val notificationViewModel: NotificationViewModel by viewModels()
 
     @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        notificationViewModel.connectionError.observe(this){
+            when(it){
+                "sending"-> {
+                    Toast.makeText(this, "sending notification", Toast.LENGTH_SHORT).show()
+                }
+                "sent"-> {
+                    Toast.makeText(this, "notification sent", Toast.LENGTH_SHORT).show()
+                }
+                "error while sending"-> {
+                    Toast.makeText(this, "error while sending", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        notificationViewModel.response.observe(this){
+            if (it.isNotEmpty())
+                Log.d(TAG, "Notification in Kotlin: $it ")
+        }
+
+        fun push() {
+            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                Log.d(TAG, "push: $token")
+
+                notificationViewModel
+                    .sendNotification(
+                        NotificationModel(
+                            token,
+                            Data("FCM Notification","this notification from android")
+                        )
+                    )
+            }
+        }
+
         setContent {
             val mContext = LocalContext.current
             val friendRequestVM = ViewModelProvider(this)[FriendsViewModel::class.java]
@@ -118,7 +161,8 @@ class FriendsContainer : ComponentActivity() {
                         },
                         navigationIcon = {
                             IconButton(onClick = {
-                                finish()
+//                                finish()
+                                push()
                             }) {
                                 Icon(Icons.Filled.ArrowBack, "backIcon")
                             }

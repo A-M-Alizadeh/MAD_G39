@@ -1,8 +1,14 @@
 plugins {
-    id 'kotlin-kapt'
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-kapt'
+//    id 'com.android.application'
+//    id 'com.google.dagger.hilt.android'
+//    apply plugin: 'com.android.application'
+//    apply plugin: 'com.google.dagger.hilt.android'
+
 }
 
 android {
@@ -123,5 +129,23 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
     implementation 'androidx.compose.foundation:foundation:1.5.0-beta01'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.retrofit2:converter-gson:2.9.0"
+    // Dagger Hilt
+    implementation 'com.google.dagger:hilt-android:2.46.1'
+    kapt 'com.google.dagger:hilt-compiler:2.46.1'
 
+    // For instrumentation tests
+    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.46.1'
+    kaptAndroidTest 'com.google.dagger:hilt-compiler:2.46.1'
+
+    // For local unit tests
+    testImplementation 'com.google.dagger:hilt-android-testing:2.46.1'
+    kaptTest 'com.google.dagger:hilt-compiler:2.46.1'
+    // viewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+
+}
+kapt {
+    correctErrorTypes true
 }
