@@ -50,7 +50,11 @@ class FriendsViewModel: ViewModel(){
                                 document.data["status"] as Long,
                                 document.data["senderUsername"] as String,
                                 document.data["senderNickname"] as String,
-                                document.data["receiverId"] == currentUser?.uid.toString()
+                                document.data["receiverUsername"] as String,
+                                document.data["receiverNickname"] as String,
+                                document.data["receiverId"] == currentUser?.uid.toString(),
+                                document.data["senderFcmToken"] as String,
+                                document.data["receiverFcmToken"] as String
                             )
                         )
                     }
@@ -65,7 +69,11 @@ class FriendsViewModel: ViewModel(){
                                 document.data["status"] as Long,
                                 document.data["senderUsername"] as String,
                                 document.data["senderNickname"] as String,
-                                false
+                                document.data["receiverUsername"] as String,
+                                document.data["receiverNickname"] as String,
+                                false,
+                                document.data["senderFcmToken"] as String,
+                                document.data["receiverFcmToken"] as String
                             )
                         )
                     }
@@ -105,7 +113,11 @@ class FriendsViewModel: ViewModel(){
                                         document.data["status"] as Long,
                                         document.data["senderUsername"] as String,
                                         document.data["senderNickname"] as String,
-                                        document.data["receiverId"] == currentUser?.uid.toString()
+                                        document.data["receiverUsername"] as String,
+                                        document.data["receiverNickname"] as String,
+                                        document.data["receiverId"] == currentUser?.uid.toString(),
+                                        document.data["senderFcmToken"] as String,
+                                        document.data["receiverFcmToken"] as String
                                     )
                                 )
                             }
@@ -120,7 +132,11 @@ class FriendsViewModel: ViewModel(){
                                         document.data["status"] as Long,
                                         document.data["senderUsername"] as String,
                                         document.data["senderNickname"] as String,
-                                        false
+                                        document.data["receiverUsername"] as String,
+                                        document.data["receiverNickname"] as String,
+                                        false,
+                                        document.data["senderFcmToken"] as String,
+                                        document.data["receiverFcmToken"] as String
                                     )
                                 )
                             }

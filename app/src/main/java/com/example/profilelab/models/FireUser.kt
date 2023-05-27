@@ -5,8 +5,9 @@ data class FireUser(
     val username: String,
     val nickname: String,
     val interests: ArrayList<String>,
+    val fcmToken: String,
 ) {
     override fun toString(): String {
-        return username
+        return "$username $nickname $interests $fcmToken "
     }
 }

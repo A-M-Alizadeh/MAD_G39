@@ -5,16 +5,24 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.profilelab.databinding.ActivityMainBinding
 import com.example.profilelab.fragments.CalendarFrag
 import com.example.profilelab.fragments.MyReserve
 import com.example.profilelab.fragments.Profile
+import com.example.profilelab.models.FireUser
+import com.example.profilelab.view_models.FireUserViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 
@@ -27,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -54,6 +63,15 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.addDrawerListener(toggle)
             toggle.syncState()
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            FirebaseFirestore.getInstance().collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        if (document.id == FirebaseAuth.getInstance().currentUser?.uid)
+                            navView.menu.add(document.data["nickname"].toString()+":"+document.data["username"].toString()).isEnabled =
+                                false
+                    }}
+//            navView.menu.add("Really ?")
             navView.setNavigationItemSelectedListener {
                 when (it.itemId) {
                     R.id.firstItem -> {

@@ -10,7 +10,11 @@ data class FriendRequest(
     var status: Long, // 0: pending, 1: accepted, 2: rejected
     val senderUsername: String,
     val senderNickname: String,
+    val receiverUsername: String,
+    val receiverNickname: String,
     val incoming: Boolean = false,
+    val senderFcmToken: String = "",
+    val receiverFcmToken: String = "",
 ) {
     override fun toString(): String {
         return "FriendRequest(id='$id', senderId='$senderId', receiverId='$receiverId', status=$status, senderUsername='$senderUsername', senderNickname='$senderNickname', incoming=$incoming)"

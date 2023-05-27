@@ -71,6 +71,7 @@ class FireUserViewModel: ViewModel(){
                                 document.data["username"] as String,
                                 document.data["nickname"] as String,
                                 document.data["interests"] as ArrayList<String>,
+                                document.data["fcmToken"] as String,
                             )
                         )
                     }
@@ -83,13 +84,18 @@ class FireUserViewModel: ViewModel(){
     }
 
     fun sendFriendRequest(guy: FireUser){
+        Log.d(TAG, "=======> sendFriendRequest to: $guy")
         val user = FirebaseAuth.getInstance().currentUser
         val friendRequestData = hashMapOf(
             "senderId" to user?.uid.toString(),
             "receiverId" to guy.id,
             "status" to 0,
-            "senderUsername" to guy.username,
-            "senderNickname" to guy.nickname,
+            "senderUsername" to currentUser.value?.username,
+            "senderNickname" to currentUser.value?.nickname,
+            "receiverUsername" to guy.username,
+            "receiverNickname" to guy.nickname,
+            "senderFcmToken" to currentUser.value?.fcmToken,
+            "receiverFcmToken" to guy.fcmToken,
         )
         db.collection("friendship")
             .add(friendRequestData)
@@ -118,6 +124,7 @@ class FireUserViewModel: ViewModel(){
                             document.data["username"] as String,
                             document.data["nickname"] as String,
                             document.data["interests"] as ArrayList<String>,
+                            document.data["fcmToken"] as String,
                         )
                     }
                 }

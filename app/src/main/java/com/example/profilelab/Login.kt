@@ -231,7 +231,7 @@ fun signIn(username: String, password: String, mContext: Context, listerner: ()-
                 val nav = Intent(mContext, MainActivity::class.java)
                 mContext.startActivity(nav)
             } else {
-                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "Failed to Login", Toast.LENGTH_SHORT).show()
             }
             listerner()
         }

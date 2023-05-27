@@ -1,5 +1,7 @@
 package com.example.profilelab
 
+import android.content.Context
+import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -65,10 +67,11 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.profilelab.models.Data
 import com.example.profilelab.models.NotificationModel
-import com.example.profilelab.view_models.NotificationViewModel
 import com.example.profilelab.ui.theme.ProfileLabTheme
 import com.example.profilelab.view_models.FriendRequest
 import com.example.profilelab.view_models.FriendsViewModel
+import com.example.profilelab.view_models.NotificationViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -78,9 +81,11 @@ class FriendsContainer : ComponentActivity() {
     private  val TAG = "ContainerActivity"
     private val notificationViewModel: NotificationViewModel by viewModels()
 
+
     @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mcontext: Context = this
 
         notificationViewModel.connectionError.observe(this){
             when(it){
@@ -101,18 +106,22 @@ class FriendsContainer : ComponentActivity() {
                 Log.d(TAG, "Notification in Kotlin: $it ")
         }
 
-        fun push() {
-            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-                Log.d(TAG, "push: $token")
+        fun push(username: String, receiverToken: String, title: String, message: String){
+//            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+//                Log.d(TAG, "push: $token")
+            Log.d(TAG, "=======> push: $receiverToken")
 
                 notificationViewModel
                     .sendNotification(
                         NotificationModel(
-                            token,
-                            Data("FCM Notification","this notification from android")
+                            receiverToken,
+                            Data(title,"$username $message")
                         )
                     )
-            }
+
+                Toast.makeText(mcontext, "Notification sent", Toast.LENGTH_SHORT).show()
+
+//            }
         }
 
         setContent {
@@ -131,13 +140,26 @@ class FriendsContainer : ComponentActivity() {
                 TabItem(
                     title = "Friends",
                     icon = Icons.Filled.ThumbUp,
-                    screen = { FriendsTab(content = "Friends", data= friends.value, friendRequestVM)},
+                    screen = { FriendsTab(
+                        content = "Friends",
+                        data= friends.value,
+                        friendRequestVM,
+                    ) { username, receiverToken, title, message ->
+                        push(username, receiverToken, title, message)
+                    }},
                 ),
                 TabItem(
                     title = "Requests",
                     icon = Icons.Filled.Send,
-                    screen = { RequestTab(content = "Requests", data = requests.value, friendRequestVM)},
-                ),
+                ) {
+                    RequestTab(
+                        content = "Requests",
+                        data = requests.value,
+                        friendRequestVM
+                    ) { username, receiverToken, title, message ->
+                        push(username, receiverToken, title, message)
+                    }
+                },
             )
             val pagerState = rememberPagerState(
                 initialPage = 0,
@@ -161,8 +183,7 @@ class FriendsContainer : ComponentActivity() {
                         },
                         navigationIcon = {
                             IconButton(onClick = {
-//                                finish()
-                                push()
+                                finish()
                             }) {
                                 Icon(Icons.Filled.ArrowBack, "backIcon")
                             }
@@ -209,7 +230,8 @@ class FriendsContainer : ComponentActivity() {
 private fun RequestTab(
     content: String,
     data: List<FriendRequest>,
-    friendRequestVM: FriendsViewModel
+    friendRequestVM: FriendsViewModel,
+    notifier : (String, String, String, String) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -227,7 +249,7 @@ private fun RequestTab(
                 items = data,//listOf('a', 'b', 'c'),
                 key = { it.id },
             ) {
-                FriendCard(type="request",request = it, friendRequestVM = friendRequestVM)
+                RequestCard(request = it, friendRequestVM = friendRequestVM, notifier= notifier)
             }
         }
     }
@@ -235,7 +257,7 @@ private fun RequestTab(
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: FriendsViewModel){
+fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifier : (String, String, String, String) -> Unit){
     val mContext = LocalContext.current
     Card(
         modifier = Modifier
@@ -272,7 +294,7 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
                 Arrangement.Center
             ) {
                 Text(
-                    text = request.senderNickname,
+                    text = request.senderNickname.takeIf { request.incoming} ?: request.receiverNickname,
                     style = TextStyle(
                         color = Color.Black,
                         fontSize = 18.sp,
@@ -285,7 +307,7 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
                     withStyle(style = SpanStyle(color = Color.Gray)) {
                         append("Email: ")
                     }
-                    append(request.senderUsername)
+                    append(request.senderUsername.takeIf { request.incoming} ?: request.receiverUsername)
                 },
                     style = TextStyle(
                         color = Color.Black,
@@ -310,23 +332,6 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (type == "friend"){
-                TextButton(
-                    modifier = Modifier
-                        .padding(vertical = 0.dp, horizontal = 8.dp),
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color(0xFFFBC02D),
-                    ),
-                    onClick = {
-                    }) {
-                    Icon(
-                        imageVector = Icons.Default.Notifications,
-                        contentDescription = "Bell Icon",
-                        tint = Color(0xFFFBC02D)
-                    )
-                    Text("Notify")
-                }
-            }else{
                 if (request.incoming){
                     TextButton(
                         modifier = Modifier
@@ -346,7 +351,13 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
                             contentColor = Color(0xFF388E3C) ,
                         ),
                         onClick = {
+                            Log.d("TAG", "====> FriendCard:${request.id} ${request.senderFcmToken}")
                             friendRequestVM.changeFriendshipStatus(request.id, 1)
+                            notifier(
+                                "Friend Request",
+                                request.senderFcmToken,
+                                "Friend Request",
+                                "${request.senderNickname} friend request accepted!")
                         }) {
                         Text("Accept")
                     }
@@ -363,7 +374,7 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
                         Text("Cancel")
                     }
                 }
-            }
+
 
 
         }
@@ -379,7 +390,8 @@ fun FriendCard(type:String = "friend", request: FriendRequest,friendRequestVM: F
 private fun FriendsTab(
     content: String,
     data: List<FriendRequest>,
-    friendRequestVM: FriendsViewModel
+    friendRequestVM: FriendsViewModel,
+    notifier : (String, String, String, String) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -397,8 +409,118 @@ private fun FriendsTab(
                 items = data,//listOf('a', 'b', 'c'),
                 key = { it.id }
             ) {
-                FriendCard(type="friend",request = it, friendRequestVM = friendRequestVM)
+                FriendCard(request = it, friendRequestVM = friendRequestVM, notifier = notifier)
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun FriendCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifier : (String, String, String, String) -> Unit){
+    val mContext = LocalContext.current
+    Card(
+        modifier = Modifier
+            .padding(
+                start = 8.dp,
+                top = 8.dp,
+                end = 8.dp,
+                bottom = 0.dp
+            )
+            .fillMaxWidth()
+            .background(color = Color(0xFFFAFAFA)), //Color(0xFFFAFAFA)
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        ),
+        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+        onClick = {
+        },
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White, //Color.White
+        ),
+
+        ) {
+
+        Row(modifier = Modifier
+            .padding(
+                start = 20.dp,
+                top = 20.dp,
+                end = 20.dp,
+                bottom = 0.dp
+            )
+            .background(color = Color.White)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                Arrangement.Center
+            ) {
+                Text(
+                    text = request.receiverNickname.takeIf { FirebaseAuth.getInstance().currentUser?.uid.toString() == request.senderId} ?: request.senderNickname,
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                )
+
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(buildAnnotatedString {
+                    withStyle(style = SpanStyle(color = Color.Gray)) {
+                        append("Email: ")
+                    }
+                    append(request.receiverUsername.takeIf {FirebaseAuth.getInstance().currentUser?.uid.toString() == request.senderId} ?: request.senderUsername)
+                },
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 15.sp
+                    )
+                )
+            }
+
+            GlideImage(
+                model = "https://xsgames.co/randomusers/assets/avatars/male/${(0..50).random()}.jpg",
+                contentDescription = "Image",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(40.dp)
+                    .clip((CircleShape))
+            )
+
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+                TextButton(
+                    modifier = Modifier
+                        .padding(vertical = 0.dp, horizontal = 8.dp),
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color(0xFFFBC02D),
+                    ),
+                    onClick = {
+                        Log.d("TAG", "====> FriendCard:${request.id} ${request.senderFcmToken}")
+                        var fcm : String = request.senderFcmToken
+                        if (FirebaseAuth.getInstance().currentUser?.uid.toString() == request.senderId){
+                            fcm = request.receiverFcmToken
+                        }
+                        notifier( //here
+                            request.receiverNickname,
+                            fcm,
+                            "Heads Up",
+                            "${request.senderNickname} are you up for a game?")
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Bell Icon",
+                        tint = Color(0xFFFBC02D)
+                    )
+                    Text("Notify")
+                }
+
+
+        }
+
     }
 }
