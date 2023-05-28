@@ -18,7 +18,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
@@ -153,24 +155,28 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
             Toast.makeText(requireContext(), "Please select all fields", Toast.LENGTH_SHORT).show()
             return
         } else {
-            var loc = hashMapOf(
-                "lat" to 0,
-                "lng" to 0
-            )
-            var rsrv = hashMapOf(
-                "user_id" to 1,
-                "date" to selectedDate,
-                "court" to selectedCourt,
-                "endTime" to selectedTime.split("-")[1].trim(),
-                "sport" to selectedSport,
-                "startTime" to selectedTime.split("-")[0].trim(),
-                "location" to loc,
-                "description" to descriptionText,
-                "status" to true
-            )
-            Log.e("rsrv", rsrv.toString() + " " + selectedTime.split(","))
 
-            reserveViewModel.add(rsrv)
+            val user = Firebase.auth.currentUser
+
+            if (user != null) {
+                var loc = hashMapOf(
+                    "lat" to 0,
+                    "lng" to 0
+                )
+                var rsrv = hashMapOf(
+                    "user_id" to user.uid,
+                    "date" to selectedDate,
+                    "court" to selectedCourt,
+                    "endTime" to selectedTime.split("-")[1].trim(),
+                    "sport" to selectedSport,
+                    "startTime" to selectedTime.split("-")[0].trim(),
+                    "location" to loc,
+                    "description" to descriptionText,
+                    "status" to true
+                )
+                Log.e("rsrv", rsrv.toString() + " " + selectedTime.split(","))
+
+                reserveViewModel.add(rsrv)
 
                 requireActivity().runOnUiThread {
                     selectedTime = ""
@@ -179,7 +185,8 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
                     selectedSport = ""
                     descriptionText = ""
                 }
-        }
+            }
+            }
     }
 
 //    @OptIn(DelicateCoroutinesApi::class)
