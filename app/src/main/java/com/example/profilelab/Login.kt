@@ -68,9 +68,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import com.example.profilelab.ui.theme.ProfileLabTheme
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.security.auth.callback.Callback
 
 
@@ -226,12 +229,41 @@ fun signIn(username: String, password: String, mContext: Context, listerner: ()-
     FirebaseAuth.getInstance().signInWithEmailAndPassword(username, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                //TODO get the current user data
-                Toast.makeText(mContext, "Login successful", Toast.LENGTH_SHORT).show()
-                val nav = Intent(mContext, MainActivity::class.java)
-                mContext.startActivity(nav)
+                val usr = task.result?.user
+
+                FirebaseMessaging.getInstance().token
+                    .addOnCompleteListener(OnCompleteListener<String?> { task ->
+                        if (!task.isSuccessful) {
+                            Toast.makeText(mContext, "FCM Token Error", Toast.LENGTH_SHORT).show()
+                            Log.w(TAG, "------> Fetching FCM registration token failed", task.exception)
+                            return@OnCompleteListener
+
+                        }else{
+                            val token = task.result
+
+                            Log.e(TAG, "------> FCM token: $token | FIREAUTH: ${usr?.uid.toString()}")
+
+                            //TODO update the user fcm token
+                            FirebaseFirestore.getInstance()
+                                .collection("users")
+                                .document(usr?.uid.toString())
+                                .update("fcmToken", token)
+                                .addOnSuccessListener {
+                                    Log.d(TAG, "DocumentSnapshot successfully updated!")
+
+                                    //TODO get the current user data
+                                    Toast.makeText(mContext, "Login successful", Toast.LENGTH_SHORT).show()
+                                    val nav = Intent(mContext, MainActivity::class.java)
+                                    mContext.startActivity(nav)
+
+                                }.addOnFailureListener(OnFailureListener { e ->
+                                    Toast.makeText(mContext, "Failed to Login", Toast.LENGTH_SHORT).show()
+                                })
+                        }
+                    })
+
             } else {
-                Toast.makeText(mContext, "Failed to Login", Toast.LENGTH_SHORT).show()
+                Toast.makeText(mContext, "Unsuccessful Authentication", Toast.LENGTH_SHORT).show()
             }
             listerner()
         }
