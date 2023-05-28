@@ -196,7 +196,7 @@ fun register(name: String) {
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Username") },
+            label = { Text(text = "Email") },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = colorResource(id =R.color.red_500),
                 unfocusedIndicatorColor = Color.Transparent,
@@ -232,7 +232,7 @@ fun register(name: String) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Face,
-                    contentDescription = "Email Icon",
+                    contentDescription = "User Icon",
                     tint = Color.LightGray
                 )
             },
@@ -245,7 +245,7 @@ fun register(name: String) {
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Password") },
+            label = { Text(text = "Password: 123abc") },
             value = password.value,
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = colorResource(id =R.color.red_500),
@@ -257,7 +257,7 @@ fun register(name: String) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Email Icon",
+                    contentDescription = "Password Icon",
                     tint = Color.LightGray
                 )
             },
@@ -283,7 +283,7 @@ fun register(name: String) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Email Icon",
+                    contentDescription = "Password Icon",
                     tint = Color.LightGray
                 )
             },
@@ -374,44 +374,46 @@ fun signUp(username: String,nickname:String, passwrod: String, mContext: Context
             if (!task.isSuccessful) {
                 Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
                 Log.w(TAG, "------> Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-            // Get new FCM registration token
-            val token = task.result
+//                return@OnCompleteListener
 
-            //old part register
-            FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val user = FirebaseAuth.getInstance().currentUser
-                        val db = FirebaseFirestore.getInstance()
-                        val interestz = arrayListOf<String>()
-                        interests.map { interest ->
-                            if (interest.selected){
-                                interestz.add(interest.title)
-                            }}
-                        val userMap = hashMapOf(
-                            "username" to username,
-                            "nickname" to nickname,
-                            "password" to passwrod,
-                            "interests" to interestz,
-                            "fcmToken" to token
-                        )
-                        db.collection("users").document(user?.uid.toString()).set(userMap)
-                            .addOnSuccessListener {
-                                Toast.makeText(mContext, "Registered Successfully", Toast.LENGTH_SHORT).show()
-                                mContext.startActivity(Intent(mContext, Login::class.java))
-                            }
-                            .addOnFailureListener {
-                                Log.d("TAG", "======> Failed to register${it.message}")
-                                Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
-                            }
-                    } else {
-                        Log.d("TAG", "======> Failed to register${task.exception?.message}")
-                        Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                // Get new FCM registration token
+                val token = task.result
+                //old part register
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(username, passwrod)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val user = FirebaseAuth.getInstance().currentUser
+                            val db = FirebaseFirestore.getInstance()
+                            val interestz = arrayListOf<String>()
+                            interests.map { interest ->
+                                if (interest.selected){
+                                    interestz.add(interest.title)
+                                }}
+                            val userMap = hashMapOf(
+                                "username" to username,
+                                "nickname" to nickname,
+                                "password" to passwrod,
+                                "interests" to interestz,
+                                "fcmToken" to token
+                            )
+                            db.collection("users").document(user?.uid.toString()).set(userMap)
+                                .addOnSuccessListener {
+                                    Toast.makeText(mContext, "Registered Successfully", Toast.LENGTH_SHORT).show()
+                                    mContext.startActivity(Intent(mContext, Login::class.java))
+                                }
+                                .addOnFailureListener {
+                                    Log.d("TAG", "======> Failed to register${it.message}")
+                                    Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                                }
+                        } else {
+                            Log.d("TAG", "======> Failed to register${task.exception?.message}")
+                            Toast.makeText(mContext, "Failed to register", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                }
-            //old part register
+                //old part register
+            }
+
+
         })
 }
 

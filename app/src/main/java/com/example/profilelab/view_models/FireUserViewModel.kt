@@ -88,31 +88,60 @@ class FireUserViewModel: ViewModel(){
     }
 
     fun sendFriendRequest(guy: FireUser){
-        Log.d(TAG, "=======> sendFriendRequest to: $guy")
-        val user = FirebaseAuth.getInstance().currentUser
-        val friendRequestData = hashMapOf(
-            "senderId" to user?.uid.toString(),
-            "receiverId" to guy.id,
-            "status" to 0,
-            "senderUsername" to currentUser.value?.username,
-            "senderNickname" to currentUser.value?.nickname,
-            "receiverUsername" to guy.username,
-            "receiverNickname" to guy.nickname,
-            "senderFcmToken" to currentUser.value?.fcmToken,
-            "receiverFcmToken" to guy.fcmToken,
-        )
-        db.collection("friendship")
-            .add(friendRequestData)
-            .addOnSuccessListener {
+//        val user = FirebaseAuth.getInstance().currentUser
+        //fixing the error in dirty way
+        var usr: FireUser? = null
 
-                usersList.value?.removeIf { it.id == guy.id }
-                usersList.postValue(usersList.value)
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if (document.id == FirebaseAuth.getInstance().currentUser?.uid.toString()) {
+                        usr = FireUser(
+                            document.id,
+                            document.data["username"] as String,
+                            document.data["nickname"] as String,
+                            document.data["interests"] as ArrayList<String>,
+                            document.data["fcmToken"] as String,
+                        )
+                    }
+                }
+                currentUser.postValue(usr)
 
-                Log.d(TAG, "DocumentSnapshot successfully written!")
+                //old part
+                Log.d(TAG, "=======> guy sendFriendRequest to: $guy")
+                Log.d(TAG, "=======> Auth sendFriendRequest to: ${FirebaseAuth.getInstance().currentUser?.uid.toString()}")
+                Log.d(TAG, "=======> me sendFriendRequest to: ${usr}")
+                val friendRequestData = hashMapOf(
+                    "senderId" to usr?.id,
+                    "receiverId" to guy.id,
+                    "status" to 0,
+                    "senderUsername" to usr?.username,
+                    "senderNickname" to usr?.nickname,
+                    "receiverUsername" to guy.username,
+                    "receiverNickname" to guy.nickname,
+                    "senderFcmToken" to usr?.fcmToken,
+                    "receiverFcmToken" to guy.fcmToken,
+                )
+                db.collection("friendship")
+                    .add(friendRequestData)
+                    .addOnSuccessListener {
+
+                        usersList.value?.removeIf { it.id == guy.id }
+                        usersList.postValue(usersList.value)
+
+                        Log.d(TAG, "DocumentSnapshot successfully written!")
+                    }
+                    .addOnFailureListener {
+                            e -> Log.w(TAG, "Error writing document", e)
+                    }
+                //old part end
+
             }
-            .addOnFailureListener {
-                    e -> Log.w(TAG, "Error writing document", e)
+            .addOnFailureListener { exception ->
+                Log.w(TAG, "Error getting Users(Friends) documents.", exception)
             }
+        //fixing the error in dirty way
     }
 
     fun findUserById(id:String) {

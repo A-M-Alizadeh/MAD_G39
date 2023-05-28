@@ -129,7 +129,7 @@ fun login(name: String, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Username") },
+            label = { Text(text = "Email") },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = colorResource(id =R.color.red_500),
                 unfocusedIndicatorColor = Color.Transparent,
@@ -154,7 +154,7 @@ fun login(name: String, modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-            label = { Text(text = "Password") },
+            label = { Text(text = "Password: 123abc") },
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = colorResource(id =R.color.red_500),
                 unfocusedIndicatorColor = Color.Transparent,
@@ -165,7 +165,7 @@ fun login(name: String, modifier: Modifier = Modifier) {
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Email Icon",
+                    contentDescription = "Password Icon",
                     tint = Color.LightGray
                 )
             },
