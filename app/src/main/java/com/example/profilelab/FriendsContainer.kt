@@ -1,7 +1,6 @@
 package com.example.profilelab
 
 import android.content.Context
-import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -46,8 +45,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,17 +59,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.profilelab.models.Data
 import com.example.profilelab.models.NotificationModel
+import com.example.profilelab.sealed.FriendsDataState
+import com.example.profilelab.sealed.RequestDataState
 import com.example.profilelab.ui.theme.ProfileLabTheme
 import com.example.profilelab.view_models.FriendRequest
-import com.example.profilelab.view_models.FriendsViewModel
 import com.example.profilelab.view_models.NotificationViewModel
+import com.example.profilelab.view_models.liveVM.FriendsLiveViewModel
+import com.example.profilelab.view_models.liveVM.RequestsLiveViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -126,37 +124,33 @@ class FriendsContainer : ComponentActivity() {
 
         setContent {
             val mContext = LocalContext.current
-            val friendRequestVM = ViewModelProvider(this)[FriendsViewModel::class.java]
-            val requests = remember { mutableStateOf(listOf<FriendRequest>()) }
-            val friends = remember { mutableStateOf(listOf<FriendRequest>()) }
-            friendRequestVM.requestList.observe(this) {
-                requests.value = it
-            }
-            friendRequestVM.friendList.observe(this) {
-                friends.value = it
-            }
+//            val friendRequestVM = ViewModelProvider(this)[FriendsViewModel::class.java]
+//            val requests = remember { mutableStateOf(listOf<FriendRequest>()) }
+//            val friends = remember { mutableStateOf(listOf<FriendRequest>()) }
+//            friendRequestVM.requestList.observe(this) {
+//                requests.value = it
+//            }
+//            friendRequestVM.friendList.observe(this) {
+//                friends.value = it
+//            }
+            val friendsVM: FriendsLiveViewModel by viewModels()
+            val requestsVM: RequestsLiveViewModel by viewModels()
 
             val tabs = listOf(
                 TabItem(
                     title = "Friends",
                     icon = Icons.Filled.ThumbUp,
-                    screen = { FriendsTab(
-                        content = "Friends",
-                        data= friends.value,
-                        friendRequestVM,
-                    ) { username, receiverToken, title, message ->
-                        push(username, receiverToken, title, message)
-                    }},
+                    screen = {
+                        setFriendsData(friendsVM){ username, receiverToken, title, message ->
+                            push(username, receiverToken, title, message)
+                        }
+                             },
                 ),
                 TabItem(
                     title = "Requests",
                     icon = Icons.Filled.Send,
                 ) {
-                    RequestTab(
-                        content = "Requests",
-                        data = requests.value,
-                        friendRequestVM
-                    ) { username, receiverToken, title, message ->
+                    setRequestData(requestsVM){ username, receiverToken, title, message ->
                         push(username, receiverToken, title, message)
                     }
                 },
@@ -221,6 +215,57 @@ class FriendsContainer : ComponentActivity() {
             }
         }
     }
+
+    @Composable
+    fun setRequestData(requestsVM: RequestsLiveViewModel, push: (String, String, String, String) -> Unit) {
+        when (val result = requestsVM.response.value) {
+            is RequestDataState.Loading -> {
+//                return "Loading"
+            }
+            is RequestDataState.Success -> {
+                RequestTab(
+                    content = "Requests",
+                    data = result.data,
+                    requestsVM
+                ) { username, receiverToken, title, message ->
+                    push(username, receiverToken, title, message)
+                }
+            }
+            is RequestDataState.Failure -> {
+//                return "Error"
+            }
+
+            else -> {
+//                return "Error"
+            }
+        }
+    }
+
+    @Composable
+    fun setFriendsData(friendsVM: FriendsLiveViewModel, push: (String, String, String, String) -> Unit) {
+        when (val result = friendsVM.response.value) {
+            is FriendsDataState.Loading -> {
+//                return "Loading"
+            }
+            is FriendsDataState.Success -> {
+                FriendsTab(
+                    content = "Friends",
+                    data= result.data,
+                    friendsVM,
+                ) { username, receiverToken, title, message ->
+                        push(username, receiverToken, title, message)
+                }
+            }
+            is FriendsDataState.Failure -> {
+//                return "Error"
+            }
+
+            else -> {
+//                return "Error"
+            }
+        }
+    }
+
 }
 
 
@@ -229,8 +274,8 @@ class FriendsContainer : ComponentActivity() {
 @Composable
 private fun RequestTab(
     content: String,
-    data: List<FriendRequest>,
-    friendRequestVM: FriendsViewModel,
+    data: MutableList<FriendRequest>,
+    requestsVM: RequestsLiveViewModel,
     notifier : (String, String, String, String) -> Unit
 ) {
     Column(
@@ -249,7 +294,7 @@ private fun RequestTab(
                 items = data,//listOf('a', 'b', 'c'),
                 key = { it.id },
             ) {
-                RequestCard(request = it, friendRequestVM = friendRequestVM, notifier= notifier)
+                RequestCard(request = it, requestsVM = requestsVM, notifier= notifier)
             }
         }
     }
@@ -257,7 +302,10 @@ private fun RequestTab(
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifier : (String, String, String, String) -> Unit){
+fun RequestCard(
+    request: FriendRequest,
+    requestsVM: RequestsLiveViewModel,
+    notifier : (String, String, String, String) -> Unit){
     val mContext = LocalContext.current
     Card(
         modifier = Modifier
@@ -340,7 +388,7 @@ fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifi
                             contentColor = colorResource(id = R.color.red_500),
                         ),
                         onClick = {
-                            friendRequestVM.changeFriendshipStatus(request.id, 2)
+                            requestsVM.changeFriendshipStatus(request.id, 2)
                         }) {
                         Text("Reject")
                     }
@@ -352,7 +400,7 @@ fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifi
                         ),
                         onClick = {
                             Log.d("TAG", "====> FriendCard:${request.id} ${request.senderFcmToken}")
-                            friendRequestVM.changeFriendshipStatus(request.id, 1)
+                            requestsVM.changeFriendshipStatus(request.id, 1)
                             notifier(
                                 "Friend Request",
                                 request.senderFcmToken,
@@ -369,7 +417,7 @@ fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifi
                             contentColor = colorResource(id = R.color.info_blue),
                         ),
                         onClick = {
-                            friendRequestVM.changeFriendshipStatus(request.id, 3)
+                            requestsVM.changeFriendshipStatus(request.id, 3)
                         }) {
                         Text("Cancel")
                     }
@@ -389,8 +437,8 @@ fun RequestCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifi
 @Composable
 private fun FriendsTab(
     content: String,
-    data: List<FriendRequest>,
-    friendRequestVM: FriendsViewModel,
+    data: MutableList<FriendRequest>,
+    friendsVM: FriendsLiveViewModel,
     notifier : (String, String, String, String) -> Unit
 ) {
     Column(
@@ -409,7 +457,7 @@ private fun FriendsTab(
                 items = data,//listOf('a', 'b', 'c'),
                 key = { it.id }
             ) {
-                FriendCard(request = it, friendRequestVM = friendRequestVM, notifier = notifier)
+                FriendCard(request = it, friendsVM = friendsVM, notifier = notifier)
             }
         }
     }
@@ -418,7 +466,10 @@ private fun FriendsTab(
 
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun FriendCard(request: FriendRequest,friendRequestVM: FriendsViewModel, notifier : (String, String, String, String) -> Unit){
+fun FriendCard(
+    request: FriendRequest,
+    friendsVM: FriendsLiveViewModel,
+    notifier : (String, String, String, String) -> Unit){
     val mContext = LocalContext.current
     Card(
         modifier = Modifier

@@ -1,15 +1,10 @@
 package com.example.profilelab
 
-import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -39,8 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -53,19 +46,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.profilelab.models.FireUser
+import com.example.profilelab.sealed.PeopleDataState
 import com.example.profilelab.ui.theme.ProfileLabTheme
-import com.example.profilelab.view_models.FireUserViewModel
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.profilelab.view_models.liveVM.PeopleLiveViewModel
 
 
 class Friends : ComponentActivity() {
@@ -75,11 +61,12 @@ class Friends : ComponentActivity() {
 
         setContent {
             val mContext = LocalContext.current
-            val usersVM = ViewModelProvider(this)[FireUserViewModel::class.java]
-            var usersList = remember { mutableStateOf(listOf<FireUser>()) }
-            usersVM.usersList.observe(this) {
-                usersList.value = it
-            }
+//            val usersVM = ViewModelProvider(this)[FireUserViewModel::class.java]
+//            var usersList = remember { mutableStateOf(listOf<FireUser>()) }
+//            usersVM.usersList.observe(this) {
+//                usersList.value = it
+//            }
+            val peopleVM: PeopleLiveViewModel by viewModels()
 
             ProfileLabTheme {
                 Column() {
@@ -106,139 +93,172 @@ class Friends : ComponentActivity() {
                             }
                         }
                     )
-                    LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        modifier = Modifier
-                            .background(color = Color(0xFFFAFAFA))
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                    ) {
-                        items(
-                            items = usersList.value,
-                            key = { it.id }
-                        ) {
-                            FriendCard(emp = it, usersVM = usersVM)
-                        }
-                    }
+
+                    SetData(peopleVM)
+
                 }
 
             }
         }
     }
-}
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
-@Composable
-fun FriendCard(emp: FireUser, usersVM: FireUserViewModel){
-
-    val mContext = LocalContext.current
-    Card(
-        modifier = Modifier
-            .padding(
-                start = 8.dp,
-                top = 8.dp,
-                end = 8.dp,
-                bottom = 0.dp
-            )
-            .fillMaxWidth()
-            .background(color = Color(0xFFFAFAFA)), //Color(0xFFFAFAFA)
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ),
-        shape = RoundedCornerShape(corner = CornerSize(16.dp)),
-        onClick = {
-        },
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White, //Color.White
-        ),
-
-        ) {
-
-        Row(modifier = Modifier
-            .padding(
-                start = 20.dp,
-                top = 20.dp,
-                end = 20.dp,
-                bottom = 0.dp
-            )
-            .background(color = Color.White)) {
-            Column(
-                modifier = Modifier.weight(1f),
-                Arrangement.Center
-            ) {
-                Text(
-                    text = emp.nickname,
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                )
-
-                Spacer(modifier = Modifier.padding(5.dp))
-                Text(buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Gray)) {
-                        append("Email: ")
-                    }
-                    append(emp.username)
-                },
-                    style = TextStyle(
-                        color = Color.Black,
-                        fontSize = 15.sp
-                    )
-                )
-
-                Spacer(modifier = Modifier.padding(5.dp))
-                Row() {
-                    emp.interests?.map { interest ->
-                        Text(
-                            modifier = Modifier
-                                .padding(2.dp)
-                                .border(
-                                    1.dp,
-                                    colorResource(id = R.color.white),
-                                    RoundedCornerShape(50.dp)
-                                )
-                                .background(Color(0xFFF5F5F5), RoundedCornerShape(50.dp))
-                                .padding(5.dp),
-                            text = interest,
-                            style = TextStyle(
-                                color = Color.Black,
-                                fontSize = 8.sp
-                            )
-                        )
-                    }
-
-                }
+    @Composable
+    fun SetData(peopleVM: PeopleLiveViewModel) {
+        when (val result = peopleVM.response.value) {
+            is PeopleDataState.Loading -> {
+//                return "Loading"
+            }
+            is PeopleDataState.Success -> {
+                LazyPeople(result.data, peopleVM)
+            }
+            is PeopleDataState.Failure -> {
+//                return "Error"
             }
 
-            GlideImage(
-                model = "https://xsgames.co/randomusers/assets/avatars/male/${(0..50).random()}.jpg",
-                contentDescription = "Image",
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(80.dp)
-                    .clip((CircleShape))
-            )
-
+            else -> {
+//                return "Error"
+            }
         }
-        TextButton(
+    }
+
+    @Composable
+    fun LazyPeople(data: MutableList<FireUser>, peopleVM: PeopleLiveViewModel) {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             modifier = Modifier
-                .padding(vertical = 0.dp, horizontal = 8.dp),
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = Color(0xFF388E3C),
-            ),
-            onClick = {
-                usersVM.sendFriendRequest(emp)
-                val notice = FireNotification(
-                    mContext,
-                    title = "Friend Request",
-                    message = "Your Friend Request sent to : ${emp.nickname}",
-                )
-                notice.fireNotification()
-            }) {
-            Text("Connect +")
+                .background(color = Color(0xFFFAFAFA))
+                .fillMaxWidth()
+                .fillMaxHeight()
+        ) {
+            items(
+                items = data,
+                key = { item -> item.id }
+            ) {
+                FriendCard(emp = it, peopleVM = peopleVM)
+            }
         }
     }
+
+
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalGlideComposeApi::class)
+    @Composable
+    fun FriendCard(emp: FireUser, peopleVM: PeopleLiveViewModel){
+
+        val mContext = LocalContext.current
+        Card(
+            modifier = Modifier
+                .padding(
+                    start = 8.dp,
+                    top = 8.dp,
+                    end = 8.dp,
+                    bottom = 0.dp
+                )
+                .fillMaxWidth()
+                .background(color = Color(0xFFFAFAFA)), //Color(0xFFFAFAFA)
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp
+            ),
+            shape = RoundedCornerShape(corner = CornerSize(16.dp)),
+            onClick = {
+            },
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White, //Color.White
+            ),
+
+            ) {
+
+            Row(modifier = Modifier
+                .padding(
+                    start = 20.dp,
+                    top = 20.dp,
+                    end = 20.dp,
+                    bottom = 0.dp
+                )
+                .background(color = Color.White)) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    Arrangement.Center
+                ) {
+                    Text(
+                        text = emp.nickname,
+                        style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Text(buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color.Gray)) {
+                            append("Email: ")
+                        }
+                        append(emp.username)
+                    },
+                        style = TextStyle(
+                            color = Color.Black,
+                            fontSize = 15.sp
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.padding(5.dp))
+                    Row() {
+                        emp.interests?.map { interest ->
+                            Text(
+                                modifier = Modifier
+                                    .padding(2.dp)
+                                    .border(
+                                        1.dp,
+                                        colorResource(id = R.color.white),
+                                        RoundedCornerShape(50.dp)
+                                    )
+                                    .background(Color(0xFFF5F5F5), RoundedCornerShape(50.dp))
+                                    .padding(5.dp),
+                                text = interest,
+                                style = TextStyle(
+                                    color = Color.Black,
+                                    fontSize = 8.sp
+                                )
+                            )
+                        }
+
+                    }
+                }
+
+                GlideImage(
+                    model = "https://xsgames.co/randomusers/assets/avatars/male/${(0..50).random()}.jpg",
+                    contentDescription = "Image",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(80.dp)
+                        .clip((CircleShape))
+                )
+
+            }
+            TextButton(
+                modifier = Modifier
+                    .padding(vertical = 0.dp, horizontal = 8.dp),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color(0xFF388E3C),
+                ),
+                onClick = {
+                    peopleVM.sendLiveFriendRequest(emp)
+                    val notice = FireNotification(
+                        mContext,
+                        title = "Friend Request",
+                        message = "Your Friend Request sent to : ${emp.nickname}",
+                    )
+                    notice.fireNotification()
+                }) {
+                Text("Connect +")
+            }
+        }
+    }
+
 }
+
+
+
+
+
+
