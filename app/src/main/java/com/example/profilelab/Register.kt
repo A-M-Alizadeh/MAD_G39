@@ -33,6 +33,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -192,18 +193,25 @@ fun register(name: String) {
         ) }
 
 
-        Text(text = "Register", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
+        Text(text = "Register", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Serif))
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Email") },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
@@ -211,49 +219,55 @@ fun register(name: String) {
                     tint = Color.LightGray
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp))
-                .background(color = Color.White),
             value = username.value,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             onValueChange = { username.value = it })
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "NickName") },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Face,
-                    contentDescription = "User Icon",
+                    contentDescription = "Face Icon",
                     tint = Color.LightGray
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
             value = nickname.value,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             onValueChange = { nickname.value = it })
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            label = { Text(text = "Password: 123abc") },
-            value = password.value,
+        OutlinedTextField(
+            label = { Text(text = "Password") },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -261,25 +275,29 @@ fun register(name: String) {
                     tint = Color.LightGray
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
+            value = password.value,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { password.value = it })
 
+
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Repeat Password") },
-            value = repeatPassword.value,
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -287,10 +305,7 @@ fun register(name: String) {
                     tint = Color.LightGray
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp)),
+            value = repeatPassword.value,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { repeatPassword.value = it })
@@ -298,7 +313,7 @@ fun register(name: String) {
 
         //TODO: Updaing the state of the button
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Interests", style = TextStyle(fontSize = 20.sp, fontFamily = FontFamily.Cursive))
+        Text(text = "Interests", style = TextStyle(fontSize = 20.sp, fontFamily = FontFamily.Serif))
         Spacer(modifier = Modifier.height(10.dp))
         LazyRow(modifier = Modifier
             .fillMaxWidth()

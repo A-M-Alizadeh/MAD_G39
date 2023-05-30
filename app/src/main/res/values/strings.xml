@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Reservation</string>
-    <string name="label_fullName">Full Name :</string>
+    <string name="label_fullName">Email :</string>
     <string name="label_nickname">Nick name :</string>
     <string name="label_interests">Interests :</string>
     <string name="default_fullName">John Doe</string>
@@ -27,4 +27,5 @@
     <string name="title_activity_friends">Friends</string>
     <string name="title_activity_court_detail">CourtDetail</string>
     <string name="title_activity_friends_container">FriendsContainer</string>
+    <string name="title_activity_reservation_details">ReservationDetails</string>
 </resources>

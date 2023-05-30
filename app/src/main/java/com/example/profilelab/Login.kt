@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.provider.ContactsContract.CommonDataKinds.Email
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -37,6 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -128,43 +130,54 @@ fun login(name: String, modifier: Modifier = Modifier) {
         val username = remember { mutableStateOf(TextFieldValue()) }
         val password = remember { mutableStateOf(TextFieldValue()) }
 
-        Text(text = "Login", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Cursive))
+        Text(text = "Login", style = TextStyle(fontSize = 40.sp, fontFamily = FontFamily.Serif))
 
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
+        OutlinedTextField(
             label = { Text(text = "Email") },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Email,
                     contentDescription = "Email Icon",
-                    tint = Color.LightGray
+                    tint = Color.LightGray,
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp))
-                .background(color = Color.White),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             value = username.value,
             onValueChange = { username.value = it })
 
+
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            label = { Text(text = "Password: 123abc") },
+        OutlinedTextField(
+            label = { Text(text = "Password") },
             colors = TextFieldDefaults.textFieldColors(
-                focusedIndicatorColor = colorResource(id =R.color.red_500),
-                unfocusedIndicatorColor = Color.Transparent,
+                containerColor = Color.Transparent,
                 placeholderColor = Color.LightGray,
-                focusedLabelColor = colorResource(id =R.color.red_500),
+
+                unfocusedIndicatorColor = Color.LightGray,
                 unfocusedLabelColor = Color.LightGray,
+                unfocusedLeadingIconColor = Color.LightGray,
+
+                focusedLabelColor = colorResource(id =R.color.red_500),
+                focusedIndicatorColor = colorResource(id =R.color.red_500),
+                focusedLeadingIconColor = colorResource(id =R.color.red_500),
             ),
+            modifier = Modifier
+                .fillMaxWidth(),
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Lock,
@@ -173,14 +186,10 @@ fun login(name: String, modifier: Modifier = Modifier) {
                 )
             },
             value = password.value,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, colorResource(id = R.color.gray), RoundedCornerShape(10.dp))
-                .background(color = Color.White),
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             onValueChange = { password.value = it })
+
 
         Spacer(modifier = Modifier.height(20.dp))
         Box(modifier = Modifier.padding(40.dp, 0.dp, 40.dp, 0.dp)) {
@@ -203,12 +212,13 @@ fun login(name: String, modifier: Modifier = Modifier) {
                     .height(50.dp)
                     .clickable(
                         enabled = enabledd,
-                        onClick = {enabledd = false}
+                        onClick = { enabledd = false }
                     )
             ) {
                 Text(text = "Login")
             }
         }
+
 
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(

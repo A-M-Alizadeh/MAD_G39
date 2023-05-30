@@ -1,5 +1,6 @@
 package com.example.profilelab
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +37,12 @@ class ReserveAdapter(context: Context) : RecyclerView.Adapter<ReserveAdapter.Vie
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.light_red))
         }
 
+        holder.container.setOnClickListener {
+            val intent = Intent(context, ReservationDetails::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("reservation_id", itemsViewModel.reservation_id)
+            context.startActivity(intent)
+        }
         // sets the text to the textview from our itemHolder class
         holder.tv_date.text = itemsViewModel.date_
         holder.tv_court.text = itemsViewModel.court

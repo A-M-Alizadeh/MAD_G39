@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="#FFFFFF"
+    android:id="@+id/card_container"
     >
     <TextView
         android:id="@+id/tv_date"

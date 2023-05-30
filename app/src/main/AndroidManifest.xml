@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".ApplicationClass"
@@ -20,12 +22,15 @@
         android:theme="@style/Theme.ProfileLab"
         tools:targetApi="31">
         <activity
+            android:name=".ReservationDetails"
+            android:exported="false"
+            android:label="@string/title_activity_reservation_details"
+            android:theme="@style/Theme.ProfileLab" />
+        <activity
             android:name=".FriendsContainer"
             android:exported="true"
             android:label="@string/title_activity_friends_container"
-            android:theme="@style/Theme.ProfileLab" >
-
-        </activity>
+            android:theme="@style/Theme.ProfileLab"></activity>
         <activity
             android:name=".CourtDetail"
             android:exported="false"
@@ -35,19 +40,17 @@
             android:name=".Friends"
             android:exported="true"
             android:label="@string/title_activity_friends"
-            android:theme="@style/Theme.ProfileLab">
-        </activity>
+            android:theme="@style/Theme.ProfileLab"></activity>
         <activity
             android:name=".Courts"
             android:exported="true"
             android:label="@string/title_activity_courts"
-            android:theme="@style/Theme.ProfileLab"></activity>
+            android:theme="@style/Theme.ProfileLab" />
         <activity
             android:name=".Register"
             android:exported="true"
             android:label="@string/title_activity_register"
-            android:theme="@style/Theme.ProfileLab" >
-        </activity>
+            android:theme="@style/Theme.ProfileLab"></activity>
         <activity
             android:name=".Login"
             android:exported="false"
@@ -82,7 +85,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
