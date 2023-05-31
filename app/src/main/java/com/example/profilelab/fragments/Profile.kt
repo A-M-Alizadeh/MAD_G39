@@ -11,6 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.profilelab.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -36,6 +38,25 @@ class Profile : Fragment() {
         interestsTv = viewThis.findViewById(R.id.interests)
 
         initializeData()
+
+        FirebaseFirestore.getInstance().collection("users")
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                if (value != null) {
+                    var interestz = listOf<String>()
+                    for (document in value) {
+                        if (document.id == FirebaseAuth.getInstance().currentUser?.uid) {
+                            interestz = document.data["interests"] as List<String>
+                            nameTv.text = (document.data["username"] as String)
+                            surnameTv.text = (document.data["nickname"] as String)
+                            interestsTv.text =(interestz.joinToString(", "))
+                            break
+                        }
+                    }
+                }
+            }
 
         return viewThis
     }

@@ -109,23 +109,24 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
 
     private fun getTimeTable():ArrayList<TimeSlotViewModel>{//(date:String){
         db.collection("timeslots")
-        .get()
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                timeSlotData.clear()
-                for (document in task.result) {
-                    Log.d(TAG, document.id + " => " + document.data)
-                    timeSlotData.add(
-                        TimeSlotViewModel(
-                            document.id,
-                            document.data["startTime"].toString(),
-                            document.data["endTime"].toString()
-                    ))
-                    timeAdapter.notifyDataSetChanged()
+            .orderBy("startTime")
+            .get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    timeSlotData.clear()
+                    for (document in task.result) {
+                        Log.d(TAG, document.id + " => " + document.data)
+                        timeSlotData.add(
+                            TimeSlotViewModel(
+                                document.id,
+                                document.data["startTime"].toString(),
+                                document.data["endTime"].toString()
+                        ))
+                        timeAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Log.w(TAG, "Error getting documents.", task.exception)
                 }
-            } else {
-                Log.w(TAG, "Error getting documents.", task.exception)
-            }
         }
 //        GlobalScope.launch(Dispatchers.IO) {
 //            val times = db.timeSlotDao().getAll()
@@ -172,7 +173,10 @@ class TimeSlotFragment : BottomSheetDialogFragment() {
                     "startTime" to selectedTime.split("-")[0].trim(),
                     "location" to loc,
                     "description" to descriptionText,
-                    "status" to true
+                    "status" to true,
+                    "isRated" to false,
+                    "comment" to "",
+                    "rate" to 0,
                 )
                 Log.e("rsrv", rsrv.toString() + " " + selectedTime.split(","))
 

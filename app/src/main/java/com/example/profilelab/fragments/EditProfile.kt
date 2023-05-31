@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -18,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.profilelab.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -223,27 +226,67 @@ class EditProfile : Fragment() {
     private fun initializeData() {
         val sharedPreference =  requireActivity().getSharedPreferences("PROFILE_DATA", Context.MODE_PRIVATE)
 
+        FirebaseFirestore.getInstance().collection("users")
+            .addSnapshotListener { value, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                if (value != null) {
+                    var interestz = listOf<String>()
+                    for (document in value) {
+                        if (document.id == FirebaseAuth.getInstance().currentUser?.uid) {
+                            interestz = document.data["interests"] as List<String>
+                            nameTv.setText(document.data["username"].toString())
+                            nicknameET.setText(document.data["nickname"].toString())
+                            interestsTv.setText(interestz.joinToString(", "))
+                            break
+                        }
+                        oldImageCheck(sharedPreference)
+                    }
+
+                }else{
+                    CheckSharedPref(sharedPreference)
+                }
+            }
+    }
+
+    fun oldImageCheck(sharedPreference: SharedPreferences){
         if (
             sharedPreference.contains("IMAGE_URI") &&
             sharedPreference.contains("FNAME") &&
             sharedPreference.contains("NNAME") &&
             sharedPreference.contains("INTERESTS")
         ) {
-            Log.i("------> stuff exist", "Loaded from shared preferences")
             imageUri = Uri.parse(sharedPreference.getString("IMAGE_URI",null))
-
+            if ( uriToBitmap(imageUri!!) == null)
+                frame.setBackgroundResource(R.drawable.default_profile)
+            else
+                frame.setImageBitmap(uriToBitmap(imageUri!!))
+        } else {
+            frame.setBackgroundResource(R.drawable.default_profile)
+        }
+    }
+    fun CheckSharedPref(sharedPreference: SharedPreferences){
+        if (
+            sharedPreference.contains("IMAGE_URI") &&
+            sharedPreference.contains("FNAME") &&
+            sharedPreference.contains("NNAME") &&
+            sharedPreference.contains("INTERESTS")
+        ) {
+            imageUri = Uri.parse(sharedPreference.getString("IMAGE_URI",null))
             frame.setImageBitmap(uriToBitmap(imageUri!!))
             nameTv.setText(sharedPreference.getString("FNAME",null))
             nicknameET.setText(sharedPreference.getString("NNAME",null))
             interestsTv.setText(sharedPreference.getString("INTERESTS",null))
         } else {
-            Log.i("------> else block worked", "Loaded from default")
             frame.setBackgroundResource(R.drawable.default_profile)
             nameTv.setText(R.string.default_fullName)
             nicknameET.setText(R.string.default_nickname)
             interestsTv.setText(R.string.default_interests)
         }
     }
+
+
 
     private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
         try {
