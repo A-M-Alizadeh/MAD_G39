@@ -76,15 +76,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 class ReservationDetails : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         val db = FirebaseFirestore.getInstance()
         val reservation_id = intent.getStringExtra("reservation_id").toString()
-        super.onCreate(savedInstanceState)
+
         setContent {
             val mContext = LocalContext.current
             val scrollState = rememberScrollState()
             val reserveVM: ReservationLiveViewModel by viewModels()
             reserveVM.setReservationID(reservation_id)
-            Toast.makeText(mContext, "Reservation ID: $reservation_id", Toast.LENGTH_SHORT).show()
 
             ProfileLabTheme {
                 // A surface container using the 'background' color from the theme
@@ -189,17 +189,6 @@ fun Container(
             enabledd = enabledd,
         )
     }
-    Column() {
-        TextButton(onClick = {
-            FirebaseFirestore.getInstance().collection("reservations")
-                .document(reservationId).update(
-                    "rate", 3,
-                    "isRated", true,
-                    "comment", "This is a sample comment")
-        }) {
-            Text(text = "Send Sample Comment")
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -217,8 +206,6 @@ fun CardContent(
     enabledd: Boolean = true,
 ) {
     val mContext = LocalContext.current
-    var final_rate = 0
-    val final_comment = remember { mutableStateOf(TextFieldValue()) }
     Column(modifier = Modifier.padding(16.dp)) {
         Spacer(modifier = Modifier.padding(5.dp))
         Text(
@@ -313,87 +300,181 @@ fun CardContent(
         Spacer(modifier = Modifier.padding(15.dp))
         Divider(color = Color(0xFFECEFF1))
         Spacer(modifier = Modifier.padding(15.dp))
-        //TODO: you can add a flag to check if user has already rated this reservation or not
+        ratinPart(reservationId = reservationId)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+fun ratinPart(reservationId: String){
+    val mContext = LocalContext.current
+    var ratingState by remember { mutableIntStateOf(0) }
+    var notRatedRatingState by remember { mutableIntStateOf(0) }
+    val comment = remember { mutableStateOf(TextFieldValue()) }
+    val commented = remember { mutableStateOf(TextFieldValue()) }
+    var enabledd by remember { mutableStateOf(true) }
+
+    var selected by remember { mutableStateOf(false) }
+    val size by animateDpAsState(
+        targetValue = if (selected) 32.dp else 28.dp,
+        spring(Spring.DampingRatioLowBouncy)
+    )
+
+    FirebaseFirestore.getInstance()
+        .collection("reservations")
+        .document(reservationId)
+        .get()
+        .addOnSuccessListener {
+            if (it.exists()) {
+                ratingState = it.data?.get("rate").toString().toInt()
+                commented.value = TextFieldValue(it.data?.get("comment").toString())
+                enabledd = !it.data?.get("isRated").toString().toBoolean()
+            }
+        }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(color = colorResource(id = R.color.info_blue).takeIf { enabledd } ?: Color.Gray)) {
+                    append("Rate this reservation")
+                }
+            },
+            style = TextStyle(
+                color = Color.Black,
+                fontSize = 15.sp
+            )
+        )
+        Spacer(modifier = Modifier.padding(5.dp))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .border(
+                    width = 1.dp,
+                    color = Color(0xFFbdbdbd),
+                    shape = RoundedCornerShape(16.dp)
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.info_blue).takeIf { enabledd } ?: Color.Gray)) {
-                        append("Rate this reservation")
+            Spacer(modifier = Modifier.padding(2.dp))
+            Row (
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                if (enabledd){
+                    for (i in 1..5) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.round_star_24),
+                            contentDescription = "rating",
+                            modifier = Modifier
+                                .width(size)
+                                .height(size)
+                                .clickable(onClick = {
+                                    if (enabledd) {
+                                        notRatedRatingState = i
+                                    }
+                                })
+                                .pointerInteropFilter {
+                                    when (it.action) {
+                                        MotionEvent.ACTION_DOWN -> {
+                                            selected = true
+                                            notRatedRatingState = i
+                                        }
+
+                                        MotionEvent.ACTION_UP -> {
+                                            selected = false
+                                        }
+                                    }
+                                    true
+                                },
+                            tint = if (i <= notRatedRatingState) Color(0xFFE0B84F) else Color(0xFFE0E0E0)
+                        )
                     }
-                },
-                style = TextStyle(
-                    color = Color.Black,
-                    fontSize = 15.sp
-                )
-            )
-            Spacer(modifier = Modifier.padding(5.dp))
-            Column(
+                }else{
+                    for (i in 1..5) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.round_star_24),
+                            contentDescription = "rating",
+                            modifier = Modifier
+                                .width(size)
+                                .height(size),
+                            tint = if (i <= ratingState) Color(0xFFE0B84F) else Color(0xFFE0E0E0)
+                        )
+                    }
+                }
+
+
+            }
+            //TODO: pass the view model here to save the rating
+            Spacer(modifier = Modifier.padding(2.dp))
+            Divider()
+            Spacer(modifier = Modifier.padding(2.dp))
+            OutlinedTextField(
+                enabled = enabledd,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFFbdbdbd),
-                        shape = RoundedCornerShape(16.dp)
-                    ),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.padding(2.dp))
-                CustomRatingBar2(
-                    rating = rate,
-                    enabledd = enabledd,
-                    onRatingChanged = {
-                        final_rate = it
-                    }
-                )
-                //TODO: pass the view model here to save the rating
-                Spacer(modifier = Modifier.padding(2.dp))
-                Divider()
-                Spacer(modifier = Modifier.padding(2.dp))
-                OutlinedTextField(
-                    enabled = enabledd,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    value = final_comment.value.takeIf { enabledd } ?: TextFieldValue(comment) ,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedLabelColor = colorResource(id = R.color.info_blue),
-                        unfocusedLabelColor = Color.Gray,
-                        textColor = Color.Transparent,
-                        placeholderColor = Color.Transparent,
-                    ),
-                    textStyle = TextStyle(
-                        color = Color.Black,
-                        fontSize = 12.sp
-                    ),
-                    onValueChange = {
-                        if (enabledd){
-                            final_comment.value = it
+                    .height(100.dp),
+                value = commented.value.takeIf { !enabledd } ?: comment.value,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedLabelColor = colorResource(id = R.color.info_blue),
+                    unfocusedLabelColor = Color.Gray,
+                    textColor = Color.Transparent,
+                    placeholderColor = Color.Transparent,
+                ),
+                textStyle = TextStyle(
+                    color = Color.Black,
+                    fontSize = 12.sp
+                ),
+                onValueChange = {
+                    if (enabledd){
+                        comment.value = it
                     }},
-                    label = {
-                        Text("comment")
-                    }
-                )
-
-                TextButton(
-                    onClick = {
-                        if (enabledd){
-                            sendRating( mContext,reservationId, 3, final_comment.value.text)
-                        }else{
-                            Toast.makeText(mContext, "You can't rate this reservation", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    modifier = Modifier,
-                    colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.info_blue).takeIf { enabledd } ?: Color.Gray)
-                ) {
-                    Text(text = "Submit")
+                label = {
+                    Text("comment")
                 }
+            )
+
+            TextButton(
+                onClick = {
+                    if (enabledd){
+                        Toast.makeText(mContext, "Rating sent", Toast.LENGTH_SHORT).show()
+                        FirebaseFirestore
+                            .getInstance()
+                            .collection("reservations")
+                            .document(reservationId)
+                            .update("rate", notRatedRatingState.toLong(), "comment", comment.value.text, "isRated", true)
+                            .addOnSuccessListener {
+                                Toast.makeText(mContext, "Rating sent successfully", Toast.LENGTH_SHORT).show()
+                                FirebaseFirestore.getInstance()
+                                    .collection("reservations")
+                                    .document(reservationId)
+                                    .get()
+                                    .addOnSuccessListener {
+                                        if (it.exists()) {
+                                            ratingState = it.data?.get("rate").toString().toInt()
+                                            commented.value = TextFieldValue(it.data?.get("comment").toString())
+                                            enabledd = !it.data?.get("isRated").toString().toBoolean()
+                                        }
+                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(mContext, "Rating sent failed", Toast.LENGTH_SHORT).show()
+                                Log.w(ContentValues.TAG, "Error updating document", e)
+                            }
+                    }else{
+                        Toast.makeText(mContext, "You can't rate this reservation", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                modifier = Modifier,
+                colors = ButtonDefaults.textButtonColors(contentColor = colorResource(id = R.color.info_blue).takeIf { enabledd } ?: Color.Gray)
+            ) {
+                Text(text = "Submit")
             }
         }
     }
@@ -412,59 +493,59 @@ fun sendRating(context: Context,reservationId: String,rating: Int, comment: Stri
         .addOnFailureListener { e -> Log.w(ContentValues.TAG, "Error updating document", e) }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun CustomRatingBar2(
-    modifier: Modifier = Modifier,
-    rating: Int,
-    enabledd: Boolean,
-    onRatingChanged: (Int) -> Unit = {}
-) {
-    val mContext = LocalContext.current
-    var ratingState by remember { mutableIntStateOf(rating) }
-    var selected by remember { mutableStateOf(false) }
-    val size by animateDpAsState(
-        targetValue = if (selected) 32.dp else 28.dp,
-        spring(Spring.DampingRatioLowBouncy)
-    )
-
-    Row (
-        modifier = modifier,//.padding(8.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        for (i in 1..5) {
-            Icon(
-                painter = painterResource(id = R.drawable.round_star_24),
-                contentDescription = "rating",
-                modifier = modifier
-                    .width(size)
-                    .height(size)
-                    .clickable(onClick = {
-//                        if (enabledd) {
-                        ratingState = i
-                        onRatingChanged(i)
+//@OptIn(ExperimentalComposeUiApi::class)
+//@Composable
+//fun CustomRatingBar2(
+//    modifier: Modifier = Modifier,
+//    rating: Int,
+//    enabledd: Boolean,
+//    onRatingChanged: (Int) -> Unit = {}
+//) {
+//    val mContext = LocalContext.current
+//    var ratingState by remember { mutableIntStateOf(rating) }
+//    var selected by remember { mutableStateOf(false) }
+//    val size by animateDpAsState(
+//        targetValue = if (selected) 32.dp else 28.dp,
+//        spring(Spring.DampingRatioLowBouncy)
+//    )
+//
+//    Row (
+//        modifier = modifier,//.padding(8.dp),
+//        horizontalArrangement = Arrangement.Center,
+//        verticalAlignment = Alignment.CenterVertically
+//    ){
+//        for (i in 1..5) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.round_star_24),
+//                contentDescription = "rating",
+//                modifier = modifier
+//                    .width(size)
+//                    .height(size)
+//                    .clickable(onClick = {
+////                        if (enabledd) {
+//                        ratingState = i
+//                        onRatingChanged(i)
+////                        }
+//                    })
+//                    .pointerInteropFilter {
+//                        when (it.action) {
+//                            MotionEvent.ACTION_DOWN -> {
+//                                selected = true
+//                                ratingState = i
+//                            }
+//
+//                            MotionEvent.ACTION_UP -> {
+//                                selected = false
+//                            }
 //                        }
-                    })
-                    .pointerInteropFilter {
-                        when (it.action) {
-                            MotionEvent.ACTION_DOWN -> {
-                                selected = true
-                                ratingState = i
-                            }
-
-                            MotionEvent.ACTION_UP -> {
-                                selected = false
-                            }
-                        }
-                        true
-                    },
-                tint = if (i <= ratingState) Color(0xFFE0B84F) else Color(0xFFE0E0E0)
-            )
-        }
-
-    }
-}
+//                        true
+//                    },
+//                tint = if (i <= ratingState) Color(0xFFE0B84F) else Color(0xFFE0E0E0)
+//            )
+//        }
+//
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
