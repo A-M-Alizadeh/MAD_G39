@@ -1,1 +1,1 @@
-you can find video and screenshots in /screenshot
+you can find video and screenshots in /screenshots
