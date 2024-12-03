@@ -7,7 +7,7 @@ A powerful Android application designed for sports enthusiasts to streamline the
 <table>
   <tr>
     <td><img src="screenshots/Screenshot_20240116_224143.png" alt="App Demo Video" width="200"></td>
-    <td><img src="Screenshot_20240116_224730.png" alt="Screenshot 1" width="200"></td>
+    <td><img src="screenshots/Screenshot_20240116_224730.png" alt="Screenshot 1" width="200"></td>
     <td><img src="screenshots/Screenshot_20240116_224818.png" alt="Screenshot 2" width="200"></td>
     <td><img src="screenshots/Screenshot_20240116_225322.png" alt="Screenshot 3" width="200"></td>
   </tr>
